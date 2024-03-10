@@ -45,10 +45,7 @@ void print_particles(Particle* particles, const int n)
 {
     for (int i = 0; i < n; i++)
     {
-        float x_distance = particles[i].x - particles[(i - 1 + n) % n].x;
-        float y_distance = particles[i].y - particles[(i - 1 + n) % n].y;
-        float z_distance = particles[i].z - particles[(i - 1 + n) % n].z;
-        float distance_to_last_particle = sqrt(x_distance * x_distance + y_distance * y_distance + z_distance * z_distance);
+        float distance_to_last_particle = distance(particles[i], particles[(i - 1 + n) % n]);
         printf("Particle %d: x: %f   y: %f   z : %f   distance to last: %f\n",
             i, particles[i].x, particles[i].y, particles[i].z, distance_to_last_particle);
     }
