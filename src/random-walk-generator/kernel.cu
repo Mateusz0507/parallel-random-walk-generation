@@ -21,6 +21,11 @@ __host__ __device__ float distance(Particle p1, Particle p2)
     return sqrt(x_distance * x_distance + y_distance * y_distance + z_distance * z_distance);
 }
 
+__host__ __device__ float vector_length(float x, float y, float z)
+{
+    return sqrt(x * x + y * y + z * z);
+}
+
 void initialize_particles_locations(Particle* particles, const int n)
 {
     particles[0].x = particles[0].y = particles[0].z = 0;
@@ -53,7 +58,9 @@ void print_particles(Particle* particles, const int n)
 
 __global__ void check_correctness_kernel(Particle* particles, const int n, int* results)
 {
-    int i = threadIdx.x;
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n)
+        return;
     float eps = 0.001;
 
     results[i] = 1;
@@ -104,7 +111,7 @@ cudaError_t check_correctness(Particle* particles, const int n, bool* is_correct
     }
 
     // Launch a kernel on the GPU with one thread for each element.
-    check_correctness_kernel << <1, n >> > (dev_particles, n, dev_results);
+    check_correctness_kernel << <n/32 + 1, 32 >> > (dev_particles, n, dev_results);
 
     // cudaDeviceSynchronize waits for the kernel to finish, and returns
     // any errors encountered during the launch.
@@ -124,6 +131,7 @@ cudaError_t check_correctness(Particle* particles, const int n, bool* is_correct
     thrust::device_ptr<int> results_ptr = thrust::device_pointer_cast(dev_results);
     int result = thrust::reduce(results_ptr, results_ptr + n);
     *is_correct = result == n ? true : false;
+    printf("There are %d bad particles\n", n - result);
 
 Error:
     cudaFree(dev_particles);
@@ -134,14 +142,71 @@ Error:
 
 __global__ void fix_particles_locations_kernel(Particle* particles, const int n)
 {
-    int i = threadIdx.x;
-    Particle particle = particles[i];
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n)
+        return;
 
-    particle.x = i + 0.6;
-    particle.y = i + 0.7;
-    particle.z = i + 0.8;
+    float spring_strength = 0.5;
+    float force_strength = 0.5;
+    float movement_x = 0, movement_y = 0, movement_z = 0;
+    float defect, direction_x, direction_y, direction_z, length;
 
-    particles[i] = particle;
+    if (i != 0)
+    {
+        defect = distance(particles[i], particles[i - 1]) - 1;
+        direction_x = particles[i].x - particles[i - 1].x;
+        direction_y = particles[i].y - particles[i - 1].y;
+        direction_z = particles[i].z - particles[i - 1].z;
+        length = vector_length(direction_x, direction_y, direction_z);
+        if (length > 0)
+        {
+            movement_x -= direction_x / length * defect * spring_strength;
+            movement_y -= direction_y / length * defect * spring_strength;
+            movement_z -= direction_z / length * defect * spring_strength;
+        }
+    }
+
+    if (i != n)
+    {
+        defect = distance(particles[i], particles[i + 1]) - 1;
+        direction_x = particles[i].x - particles[i + 1].x;
+        direction_y = particles[i].y - particles[i + 1].y;
+        direction_z = particles[i].z - particles[i + 1].z;
+        length = vector_length(direction_x, direction_y, direction_z);
+        if (length > 0)
+        {
+            movement_x -= direction_x / length * defect * spring_strength;
+            movement_y -= direction_y / length * defect * spring_strength;
+            movement_z -= direction_z / length * defect * spring_strength;
+        }
+    }
+
+    for (int j = 0; j < n; j++)
+    {
+        if (j < i - 1 || j > i + 1)
+        {
+            defect = distance(particles[i], particles[j]) - 1;
+            if (defect < 0)
+            {
+                direction_x = particles[i].x - particles[j].x;
+                direction_y = particles[i].y - particles[j].y;
+                direction_z = particles[i].z - particles[j].z;
+                length = vector_length(direction_x, direction_y, direction_z);
+                if (length > 0)
+                {
+                    movement_x -= direction_x / length * defect * force_strength;
+                    movement_y -= direction_y / length * defect * force_strength;
+                    movement_z -= direction_z / length * defect * force_strength;
+                }
+            }
+        }
+    }
+
+    //length = vector_length(movement_x, movement_y, movement_z);
+
+    particles[i].x += movement_x;
+    particles[i].y += movement_y;
+    particles[i].z += movement_z;
 }
 
 cudaError_t fix_particles_locations(Particle* particles, const int n)
@@ -171,7 +236,7 @@ cudaError_t fix_particles_locations(Particle* particles, const int n)
     }
 
     // Launch a kernel on the GPU with one thread for each element.
-    fix_particles_locations_kernel << <1, n >> > (dev_particles, n);
+    fix_particles_locations_kernel << <n/32 + 1, 32 >> > (dev_particles, n);
 
     // cudaDeviceSynchronize waits for the kernel to finish, and returns
     // any errors encountered during the launch.
@@ -203,19 +268,32 @@ Error:
 
 int main()
 {
-    const int N = 3;
+    const int N = 2000;
     Particle particles[N];
+
     initialize_particles_locations(particles, N);
-    print_particles(particles, N);
+
+    cudaError_t cudaStatus;
+    int iteration = 0;
     bool is_correct;
     check_correctness(particles, N, &is_correct);
-    printf("Is correct? %s", is_correct ? "true" : "false");
+    while (is_correct != true)
+    {
+        printf("Iteration: %d\n", iteration);
+        //print_particles(particles, N);
 
-    cudaError_t cudaStatus = fix_particles_locations(particles, N);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "fix_particles_locations failed!");
-        return 1;
+        cudaStatus = fix_particles_locations(particles, N);
+        if (cudaStatus != cudaSuccess) {
+            fprintf(stderr, "fix_particles_locations failed!");
+            return 1;
+        }
+
+        check_correctness(particles, N, &is_correct);
+        iteration++;
     }
+
+    printf("END\n");
+    print_particles(particles, N);
 
     // cudaDeviceReset must be called before exiting in order for profiling and
     // tracing tools such as Nsight and Visual Profiler to show complete traces.
