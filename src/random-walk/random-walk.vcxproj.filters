@@ -15,16 +15,19 @@
     <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\abstract_method.h" />
     <ClInclude Include="src\common\common.cuh" />
+    <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
     <ClCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cpp" />
+    <ClCompile Include="src\algorithms\energetic\naive\energetic_naive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\algorithms\model\particle.cu" />
     <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\common\common.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
