@@ -22,6 +22,11 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
 		}
 
 		break;
+	case 1:
+		p.length = 1000;
+		p.method = 0;
+		return true;
+		break;
 	default:
 		ERROR("Wrong parameters passed!\n");
 	}
