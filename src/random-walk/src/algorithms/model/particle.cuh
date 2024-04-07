@@ -5,8 +5,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#define REAL_TYPE float
 #define DISTANCE 1.0
+
+typedef float real;
 
 namespace algorithms
 {
@@ -14,9 +15,9 @@ namespace algorithms
 	{
 		struct particle
 		{
-			REAL_TYPE x, y, z;
+			real x, y, z;
 		};
 
-		__device__ float get_distance(particle& a, particle& b);
+		__host__ __device__ real get_distance(const particle& a, const particle& b);
 	}
 }

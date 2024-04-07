@@ -10,10 +10,9 @@ bool algorithms::energetic::normalisation_method::run(algorithms::model::particl
 		} 
 		while (!validator.validate(dev_points, N, DISTANCE, EN_PRECISION));
 		release_memory();
+		return true;
 	}
-	// TODO: returning result
-
-	return true;
+	return false;
 }
 
 bool algorithms::energetic::normalisation_method::allocate_memory(int N)

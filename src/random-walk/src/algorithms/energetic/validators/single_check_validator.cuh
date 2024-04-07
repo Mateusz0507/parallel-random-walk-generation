@@ -1,11 +1,12 @@
 #pragma once
 
-// #include "global/global.h"
+#include "common/common.cuh"
 #include "algorithms/model/particle.cuh"
 #include "algorithms/energetic/validators/abstract_validator.h"
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
+#include <thrust/device_vector.h>
 
 #define SCV_BLOCK_SIZE 256
 
@@ -18,13 +19,18 @@ namespace algorithms
 			class single_check_validator: public abstract_validator
 			{
 			private:
-				bool* dev_is_valid;
+				int* dev_is_invalid = nullptr;
+				int validation_array_size = 0;
+
+				bool prepare_device_memory(int N);
 			public:
-				single_check_validator();
+				single_check_validator(int N = 0);
 				~single_check_validator();
 				virtual bool validate(model::particle* dev_data, int N, float distance, float precision) override;
 			};
 
+			void print_test(int test_number, int result, int expected);
+			void single_check_validator_test();
 		}
 	}
 }
