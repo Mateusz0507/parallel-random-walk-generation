@@ -1,7 +1,7 @@
 #pragma once
 #include "algorithms/energetic/validators/single_check_validator.cuh"
 
-__global__ void kernel_validate(const algorithms::model::particle* dev_data, int N, float distance, float precision, int* dev_is_invalid)
+__global__ void kernel_validate(const algorithms::model::particle* dev_data, int N, const float distance, const float precision, int* dev_is_invalid)
 {
     const int index = threadIdx.x + blockIdx.x * blockDim.x;
 	if (index < N)
@@ -12,15 +12,16 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 
 		int invalid_count = 0;
 
-		if (abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1]) - distance) > precision)
+		if (abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1 == N ? 0 : index + 1]) - distance) > precision)
 		{
 			// case when the following particle is in different distance than the specified as an parameter
 			invalid_count++;
 		}
 
-		for (int i = index + 2; i < index + range + 1; i++)
+		for (int i = index + 2, j = i; i < index + range + 1; i++, j++)
 		{
-			if (algorithms::model::get_distance(dev_data[index], dev_data[i]) < distance - precision)
+			if (j >= N) j = 0;
+			if (algorithms::model::get_distance(dev_data[index], dev_data[j]) < distance - precision)
 			{
 				invalid_count++;
 			}
@@ -30,7 +31,7 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 	}
 }
 
-int algorithms::energetic::validators::single_check_validator::validate(model::particle* dev_data, int N, float distance, float precision)
+bool algorithms::energetic::validators::single_check_validator::validate(model::particle* dev_data, int N, float distance, float precision)
 {
 	// checking parameters
 	if (dev_data == nullptr || N < 1 || distance < 0 || precision < 0)
@@ -50,7 +51,7 @@ int algorithms::energetic::validators::single_check_validator::validate(model::p
 	int invalid;
 	cuda_check_errors_status_terminate(invalid = thrust::reduce(dev_is_valid_ptr, dev_is_valid_ptr + N));
 
-	return invalid;
+	return invalid == 0;
 }
 
 bool algorithms::energetic::validators::single_check_validator::prepare_device_memory(int N)

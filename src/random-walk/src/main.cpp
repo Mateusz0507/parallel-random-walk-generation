@@ -9,9 +9,6 @@ int main(int argc, char** argv)
 	parameters p;
 	if (read(argc, argv, p))
 	{
-
-		algorithms::energetic::validators::single_check_validator_test();
-
 		if (p.method == 0)
 		{
 			algorithms::energetic::validators::single_check_validator validator = algorithms::energetic::validators::single_check_validator::single_check_validator();

@@ -18,6 +18,6 @@ namespace algorithms
 			real x, y, z;
 		};
 
-		__device__ real get_distance(const particle& a, const particle& b);
+		__host__ __device__ real get_distance(const particle& a, const particle& b);
 	}
 }
