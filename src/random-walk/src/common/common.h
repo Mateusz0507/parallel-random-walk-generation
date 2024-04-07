@@ -6,4 +6,4 @@
 
 using namespace std;
 
-#define ERROR(msg) perror("Error occurred."), fprintf(stderr, "[%s] %d, %s", __FILE__, __LINE__, msg), exit(EXIT_FAILURE)
+#define error(msg) perror("Error occurred."), fprintf(stderr, "[%s] %d, %s", __FILE__, __LINE__, msg), exit(EXIT_FAILURE)
