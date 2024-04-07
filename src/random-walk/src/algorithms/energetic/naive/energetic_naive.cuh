@@ -16,11 +16,10 @@ namespace algorithms
 		{
 		private:
 			validators::abstract_validator& validator;
-			model::particle* dev_unit_vectors = nullptr;
 			model::particle* dev_points = nullptr;
 			bool allocate_memory(int N);
 			void release_memory();
-			bool generate_random_unit_vectors();
+			bool generate_random_starting_points(int N);
 		public:
 			naive_method(validators::abstract_validator& validator);
 			virtual bool run(model::particle** result, int N) override;
