@@ -13,3 +13,10 @@ bool cuda_check_error(cudaError_t error, const char* file, const int line, bool 
 	}
 	return true;
 }
+
+bool cuda_check_status(const char* file, const int line, bool terminate)
+{
+	cudaError_t error = cudaPeekAtLastError();
+	return cuda_check(error, terminate);
+}
+

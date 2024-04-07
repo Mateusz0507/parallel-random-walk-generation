@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma once
 // cpp
 #include <iostream>
 #include <cstdlib>

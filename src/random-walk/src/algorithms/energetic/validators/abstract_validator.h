@@ -10,7 +10,7 @@ namespace algorithms
 			class abstract_validator
 			{
 			public:
-				virtual bool validate(model::particle* dev_data, int N, float distance, float precision) = 0;
+				virtual int validate(model::particle* dev_data, int N, float distance, float precision) = 0;
 			};
 		}
 	}
