@@ -51,6 +51,14 @@ bool create_file(algorithms::model::particle* points, const int N)
 }
 
 
+bool open_chimera()
+{
+	std::string command = CHIMERA_PATH + " " + FILE_PATH;
+	system(command.c_str());
+	return true;
+}
+
+
 int main(int argc, char** argv)
 {
 	parameters p;
@@ -62,7 +70,8 @@ int main(int argc, char** argv)
 			algorithms::energetic::naive_method method = algorithms::energetic::naive_method::naive_method(validator);
 			algorithms::model::particle* result = new algorithms::model::particle[p.length];
 			method.run(&result, p.length);
-			create_file(result, p.length);
+			if(create_file(result, p.length))
+				open_chimera();
 		}
 	}
 }

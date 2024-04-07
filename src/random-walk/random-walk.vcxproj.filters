@@ -16,6 +16,7 @@
     <ClInclude Include="src\algorithms\abstract_method.h" />
     <ClInclude Include="src\common\common.cuh" />
     <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
+    <ClInclude Include="src\constants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
