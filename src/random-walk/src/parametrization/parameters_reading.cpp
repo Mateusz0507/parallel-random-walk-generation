@@ -13,12 +13,12 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
 			}
 			catch (const std::exception e)
 			{
-				ERROR(e.what());
+				error(e.what());
 			}
 		}
 		else
 		{
-			ERROR("nullptr passed to stoi");
+			error("nullptr passed to stoi");
 		}
 
 		break;
@@ -28,7 +28,7 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
 		return true;
 		break;
 	default:
-		ERROR("Wrong parameters passed!\n");
+		error("Wrong parameters passed!\n");
 	}
 	return false;
 }
