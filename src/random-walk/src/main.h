@@ -2,8 +2,17 @@
 
 #pragma once
 // cpp
-#include <iostream>
 #include <cstdlib>
+
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 // inner files
 #include "parametrization/program_parametrization.h"
