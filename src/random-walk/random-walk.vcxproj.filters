@@ -15,6 +15,7 @@
     <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\abstract_method.h" />
     <ClInclude Include="src\common\common.cuh" />
+    <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
@@ -25,6 +26,8 @@
   <ItemGroup>
     <CudaCompile Include="src\algorithms\model\particle.cu" />
     <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\common\common.cu" />
+    <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
