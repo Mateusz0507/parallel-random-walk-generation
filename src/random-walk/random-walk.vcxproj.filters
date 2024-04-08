@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{b72dab96-98de-4db4-8785-163e263cc9e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\parametrization\program_parametrization.h" />
+    <ClInclude Include="src\common\common.h" />
+    <ClInclude Include="src\algorithms\model\particle.cuh" />
+    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
+    <ClInclude Include="src\algorithms\energetic\normalisation\energetic_normalisation.cuh" />
+    <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
+    <ClInclude Include="src\algorithms\abstract_method.h" />
+    <ClInclude Include="src\common\common.cuh" />
+    <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
+    <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
+    <ClInclude Include="src\algorithms\constaces\math_constances.h" />
+    <ClInclude Include="src\algorithms\model\randomization.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\parametrization\parameters_reading.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
+    <ClCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cpp" />
+    <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\algorithms\model\particle.cu" />
+    <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\common\common.cu" />
+    <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
+    <CudaCompile Include="src\algorithms\model\randomization.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
+</Project>
