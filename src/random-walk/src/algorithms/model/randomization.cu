@@ -12,8 +12,8 @@ __global__ void algorithms::randomization::kernel_generate_random_unit_vectors(a
 	const int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (tid < N)
 	{
-		real_t alpha = cuda_rand(&dev_states[tid]) * PI;
-		real_t beta = cuda_rand(&dev_states[tid]) * 2 * PI;
+		real_t alpha = acos(2 * cuda_rand_uniform(&dev_states[tid]) - 1.0);
+		real_t beta = cuda_rand_uniform(&dev_states[tid]) * 2 * PI;
 		dev_unit_vectors[tid].x = sin(alpha) * cos(beta);
 		dev_unit_vectors[tid].y = sin(alpha) * sin(beta);
 		dev_unit_vectors[tid].z = cos(alpha);
