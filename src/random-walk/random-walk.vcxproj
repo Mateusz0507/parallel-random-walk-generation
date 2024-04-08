@@ -22,6 +22,7 @@
     <ClInclude Include="src\algorithms\model\randomization.cuh" />
     <ClInclude Include="src\common\common.cuh" />
     <ClInclude Include="src\common\common.h" />
+    <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\parametrization\program_parametrization.h" />
   </ItemGroup>
