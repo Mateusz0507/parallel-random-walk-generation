@@ -12,17 +12,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\algorithms\abstract_method.h" />
+    <ClInclude Include="src\algorithms\constaces\math_constances.h" />
     <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
     <ClInclude Include="src\algorithms\energetic\normalisation\energetic_normalisation.cuh" />
     <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
+    <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
     <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
     <ClInclude Include="src\algorithms\model\particle.cuh" />
+    <ClInclude Include="src\algorithms\model\randomization.cuh" />
     <ClInclude Include="src\common\common.cuh" />
     <ClInclude Include="src\common\common.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\parametrization\program_parametrization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
     <ClCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cpp" />
     <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -32,6 +36,7 @@
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
     <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
     <CudaCompile Include="src\algorithms\model\particle.cu" />
+    <CudaCompile Include="src\algorithms\model\randomization.cu" />
     <CudaCompile Include="src\common\common.cu" />
   </ItemGroup>
   <ItemGroup>

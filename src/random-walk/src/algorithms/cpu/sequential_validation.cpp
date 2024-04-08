@@ -4,7 +4,7 @@
 
 bool algorithms::cpu::validate_sequentially(model::particle* result, int N, const float distance, const float precision, const bool print)
 {
-	bool are_valid;
+	bool are_valid = true;
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = i + 1; j < N; j++)
