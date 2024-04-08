@@ -1,13 +1,18 @@
 #pragma once
 
-#include "cmath"
+#include <cmath>
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include "common/common.cuh"
 
 #define DISTANCE 1.0
+#define _FLOAT
 
-typedef float real;
+#ifdef _FLOAT
+	typedef float real_t;
+#elif defined _DOUBLE
+	typedef double real_t;
+#endif
+
 
 namespace algorithms
 {
@@ -15,9 +20,9 @@ namespace algorithms
 	{
 		struct particle
 		{
-			real x, y, z;
+			real_t x, y, z;
 		};
 
-		__host__ __device__ real get_distance(const particle& a, const particle& b);
+		__host__ __device__ real_t get_distance(const particle& a, const particle& b);
 	}
 }

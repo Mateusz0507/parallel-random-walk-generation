@@ -90,8 +90,8 @@ void algorithms::energetic::validators::print_test(int test_number, int result, 
 void algorithms::energetic::validators::single_check_validator_test()
 {
 	int N = 3;
-	real distance = 1.0;
-	real precission = 100 * std::numeric_limits<real>::epsilon();
+	real_t distance = 1.0;
+	real_t precission = 100 * std::numeric_limits<real_t>::epsilon();
 	single_check_validator validator(N);
 	
 	model::particle* dev_particles;

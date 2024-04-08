@@ -5,7 +5,7 @@
 
 #include "curand_kernel.h"
 
-#define EN_NUMERIC_EPSILON std::numeric_limits<real>::epsilon()
+#define EN_NUMERIC_EPSILON std::numeric_limits<real_t>::epsilon()
 #define EN_PRECISION (100 * EN_NUMERIC_EPSILON)
 
 namespace algorithms
