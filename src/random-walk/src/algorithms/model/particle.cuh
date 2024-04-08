@@ -7,10 +7,10 @@
 #define DISTANCE 1.0
 #define _FLOAT
 
-#ifdef _FLOAT
-	typedef float real_t;
-#elif defined _DOUBLE
+#ifdef _DOUBLE
 	typedef double real_t;
+#elif defined _FLOAT
+	typedef float real_t;
 #endif
 
 
@@ -18,10 +18,12 @@ namespace algorithms
 {
 	namespace model
 	{
-		struct particle
-		{
-			real_t x, y, z;
-		};
+
+#ifdef _DOUBLE
+		typedef double3 particle;
+#elif defined _FLOAT
+		typedef float3 particle;
+#endif
 
 		__host__ __device__ real_t get_distance(const particle& a, const particle& b);
 	}
