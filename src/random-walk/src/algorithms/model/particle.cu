@@ -10,12 +10,11 @@ __host__ __device__ real_t algorithms::model::get_distance(real_t ax, real_t ay,
 	return sqrt((ax - bx) * (ax - bx) + (ay - by) * (ay - by) + (az - bz) * (az - bz));
 }
 
-__host__ __device__ algorithms::model::particle algorithms::model::operator+(const particle& a, const particle& b)
+__host__ __device__ algorithms::model::particle algorithms::model::add_particles::operator()(const algorithms::model::particle& a, const algorithms::model::particle& b) const
 {
-	particle c;
-	c.x = a.x + b.x;
-	c.y = a.y + b.y;
-	c.z = a.z + b.z;
+	algorithms::model::particle c = a;
+	c.x += b.x;
+	c.y += b.y;
+	c.z += b.z;
 	return c;
 }
-

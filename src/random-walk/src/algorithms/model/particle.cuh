@@ -34,6 +34,11 @@ namespace algorithms
 
 		__host__ __device__ real_t get_distance(real_t ax, real_t ay, real_t az, real_t bx, real_t by, real_t bz);
 
-		__host__ __device__ particle operator+(const particle& a, const particle& b);
+
+		class add_particles
+		{
+		public:
+			__host__ __device__ particle operator()(const particle& a, const particle& b) const;
+		};
 	}
 }

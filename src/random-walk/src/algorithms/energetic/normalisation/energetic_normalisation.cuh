@@ -45,6 +45,7 @@ namespace algorithms
 			model::particle* dev_unit_vectors = nullptr;
 			model::particle* dev_points = nullptr;
 			curandState* dev_states = nullptr;
+			model::add_particles add;
 
 			bool main_loop(int N, int max_iterations);
 			bool allocate_memory(int N);
