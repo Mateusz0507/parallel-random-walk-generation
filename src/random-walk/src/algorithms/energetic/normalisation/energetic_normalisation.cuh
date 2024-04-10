@@ -32,6 +32,8 @@
 	#define OFFSET 0
 #endif 
 
+using namespace algorithms::model;
+
 namespace algorithms
 {
 	namespace energetic

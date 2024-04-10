@@ -38,7 +38,7 @@ bool algorithms::energetic::validators::single_check_validator::validate(model::
 		return false;
 	
 	if (!prepare_device_memory(N))
-		return -1;
+		return false;
 
 	int number_of_blocks = (N + SCV_BLOCK_SIZE - 1) / SCV_BLOCK_SIZE;
 

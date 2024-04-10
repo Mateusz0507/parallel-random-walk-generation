@@ -6,12 +6,12 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 
 	// generating random unit_vectors
 	int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
-	algorithms::randomization::kernel_generate_random_unit_vectors(dev_unit_vectors, dev_states, N);
+	algorithms::randomization::kernel_generate_random_unit_vectors<<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_unit_vectors, dev_states, N);
 	
 	// determining particles
-	thrust::device_ptr<model::particle> dev_unit_vectors_ptr = thrust::device_ptr<model::particle>(dev_unit_vectors);
-	thrust::device_ptr<model::particle> dev_points_ptr = thrust::device_ptr<model::particle>(dev_points);
-	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr));
+	//thrust::device_ptr<model::particle> dev_unit_vectors_ptr = thrust::device_ptr<model::particle>(dev_unit_vectors);
+	//thrust::device_ptr<model::particle> dev_points_ptr = thrust::device_ptr<model::particle>(dev_points);
+	//cuda_check_errors_status_terminate(thrust::exclusive_scan<thrust::device_ptr<model::particle>>(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr));
 
 	int iterations = 0;
 	do 
@@ -19,7 +19,7 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 		// applying forces and normalising
 		
 		// determining new particles
-		cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr));
+		//cuda_check_errors_status_terminate(thrust::exclusive_scan<thrust::device_ptr<model::particle>>(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr));
 
 	} while (!validator.validate(dev_points, N, DISTANCE, EN_PRECISION) && iterations++ < max_iterations);
 	return iterations < max_iterations;
@@ -108,4 +108,5 @@ algorithms::energetic::normalisation_method::normalisation_method(validators::ab
 {
 	this->dev_points = nullptr;
 	this->dev_unit_vectors = nullptr;
+	this->dev_states = nullptr;
 }
