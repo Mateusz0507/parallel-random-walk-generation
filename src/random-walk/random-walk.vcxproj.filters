@@ -19,12 +19,12 @@
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
     <ClInclude Include="src\algorithms\constaces\math_constances.h" />
     <ClInclude Include="src\algorithms\model\randomization.cuh" />
+    <ClInclude Include="src\constants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
-    <ClCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cpp" />
     <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +33,7 @@
     <CudaCompile Include="src\common\common.cu" />
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
     <CudaCompile Include="src\algorithms\model\randomization.cu" />
+    <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
