@@ -1,6 +1,6 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-#include "cstdlib";
+#include "cstdlib"
 #include "iostream"
 
 bool cuda_check_error(cudaError_t error, const char* file, const int line, bool terminate);
