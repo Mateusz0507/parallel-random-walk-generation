@@ -1,6 +1,6 @@
 #include "chimera.h"
 
-bool create_file(algorithms::model::particle* points, const int N)
+bool create_pdb_file(algorithms::model::particle* points, const int N)
 {
 	if (N < 3) {
 		std::cerr << "Number of particles is less than 3!" << std::endl;
