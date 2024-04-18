@@ -29,6 +29,10 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 	int iterations = 0;
 	do 
 	{
+		// determine the grid cell of particle
+		// sort particles by grid cell index
+		// check near cells to find with 
+
 		// applying forces and normalising
 		
 		// determining new particles
