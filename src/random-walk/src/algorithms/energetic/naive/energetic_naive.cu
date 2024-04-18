@@ -87,6 +87,18 @@ bool algorithms::energetic::naive_method::run(algorithms::model::particle** resu
     {
         generate_random_starting_points(N);
 
+
+        /* Create pdb file with points position before the start of the algorithm */
+        algorithms::model::particle* points_before_algorithm = new algorithms::model::particle[N];
+        if (!cuda_check_continue(cudaMemcpy(points_before_algorithm, dev_points, N * sizeof(model::particle), cudaMemcpyDeviceToHost)))
+        {
+            release_memory();
+            return false;
+        }
+        create_pdb_file(points_before_algorithm, N, "before");
+        open_chimera("before");
+
+
         while (!validator.validate(dev_points, N, DISTANCE, EN_PRECISION))
         {
             iteration<<<N/32 + 1, 32>>>(dev_points, N);
