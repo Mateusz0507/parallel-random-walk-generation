@@ -12,7 +12,7 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 
 		int invalid_count = 0;
 
-		if (abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1 == N ? 0 : index + 1]) - distance) > precision)
+		if (index + 1 != N && abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1]) - distance) > precision)
 		{
 			// case when the following particle is in different distance than the specified as an parameter
 			invalid_count++;
