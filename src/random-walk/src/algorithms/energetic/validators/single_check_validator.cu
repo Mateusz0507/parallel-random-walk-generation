@@ -20,7 +20,10 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 
 		for (int i = index + 2, j = i; i < index + range + 1; i++, j++)
 		{
-			if (j >= N) j = 0;
+			if (j >= N) 
+			{
+				j -= N;
+			}
 			if (algorithms::model::get_distance(dev_data[index], dev_data[j]) < distance - precision)
 			{
 				invalid_count++;
