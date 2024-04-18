@@ -6,4 +6,5 @@
 #include "constants.h"
 #include "algorithms/model/particle.cuh"
 
+bool open_chimera();
 bool create_pdb_file(algorithms::model::particle* points, const int N);

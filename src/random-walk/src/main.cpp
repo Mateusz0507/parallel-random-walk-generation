@@ -5,14 +5,6 @@
 #include "algorithms/energetic/validators/single_check_validator.cuh"
 
 
-bool open_chimera()
-{
-	std::string command = CHIMERA_PATH + " " + FILE_PATH;
-	system(command.c_str());
-	return true;
-}
-
-
 int main(int argc, char** argv)
 {
 	parameters p;

@@ -1,5 +1,13 @@
 #include "chimera.h"
 
+
+bool open_chimera()
+{
+	std::string command = CHIMERA_PATH + " " + FILE_PATH;
+	system(command.c_str());
+	return true;
+}
+
 bool create_pdb_file(algorithms::model::particle* points, const int N)
 {
 	if (N < 3) {
