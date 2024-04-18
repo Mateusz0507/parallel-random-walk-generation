@@ -19,6 +19,8 @@
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
     <ClInclude Include="src\algorithms\constaces\math_constances.h" />
     <ClInclude Include="src\algorithms\model\randomization.cuh" />
+    <ClInclude Include="src\constants.h" />
+    <ClInclude Include="src\chimera\chimera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
@@ -26,6 +28,7 @@
     <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
     <ClCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cpp" />
     <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
+    <ClCompile Include="src\chimera\chimera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\algorithms\model\particle.cu" />
