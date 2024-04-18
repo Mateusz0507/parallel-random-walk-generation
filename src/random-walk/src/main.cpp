@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 			algorithms::energetic::naive_method method = algorithms::energetic::naive_method::naive_method(validator);
 			algorithms::model::particle* result = new algorithms::model::particle[p.length];
 			method.run(&result, p.length);
-			if(create_pdb_file(result, p.length))
+			if(create_pdb_file(result, p.length, "walk"))
 				open_chimera();
 		}
 	}
