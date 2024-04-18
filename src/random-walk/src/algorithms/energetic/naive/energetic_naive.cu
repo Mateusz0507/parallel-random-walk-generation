@@ -40,7 +40,7 @@ __global__ void iteration(algorithms::model::particle* particles, const int N)
         }
     }
 
-    if (i != N)
+    if (i != N - 1)
     {
         defect = distance(particles[i], particles[i + 1]) - 1;
         direction_x = particles[i].x - particles[i + 1].x;
