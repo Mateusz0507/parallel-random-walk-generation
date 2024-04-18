@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 			algorithms::model::particle* result = new algorithms::model::particle[p.length];
 			method.run(&result, p.length);
 			if(create_pdb_file(result, p.length, "walk"))
-				open_chimera();
+				open_chimera("walk");
 		}
 	}
 }

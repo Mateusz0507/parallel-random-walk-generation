@@ -1,9 +1,9 @@
 #include "chimera.h"
 
 
-bool open_chimera()
+bool open_chimera(const std::string file_name)
 {
-	std::string command = CHIMERA_PATH + " " + FILE_PATH;
+	std::string command = CHIMERA_PATH + " " + PDB_FILES_FOLDER_PATH + "/" + file_name + ".pdb";
 	system(command.c_str());
 	return true;
 }
