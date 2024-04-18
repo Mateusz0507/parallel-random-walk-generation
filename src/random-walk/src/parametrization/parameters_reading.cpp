@@ -23,7 +23,7 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
 
 		break;
 	case 1:
-		p.length = 100;
+		p.length = 25;
 		p.method = 0;
 		return true;
 		break;
