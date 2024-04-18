@@ -3,8 +3,20 @@
 
 bool open_chimera(const std::string file_name)
 {
-	std::string command = CHIMERA_PATH + " " + PDB_FILES_FOLDER_PATH + "/" + file_name + ".pdb";
-	system(command.c_str());
+	std::string command = CHIMERA_PATH + " " + PDB_FILES_FOLDER_PATH + "/" + file_name + ".pdb";;
+
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+	if (!CreateProcess(NULL, (LPSTR)command.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+		std::cerr << "Failed to start Chimera" << std::endl;
+		return false;
+	}
+
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
 	return true;
 }
 
