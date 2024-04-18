@@ -7,7 +7,7 @@ bool create_pdb_file(algorithms::model::particle* points, const int N)
 		return false;
 	}
 
-	std::ofstream file("../../walk.pdb");
+	std::ofstream file(FILE_PATH);
 
 	if (!file) {
 		std::cerr << "Failed to open the file for writing!" << std::endl;
