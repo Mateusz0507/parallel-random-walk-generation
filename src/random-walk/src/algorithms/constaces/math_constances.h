@@ -2,4 +2,4 @@
 
 #include <cmath>
 
-#define PI 2 * acos(0.0)
+#define PI 3.141592
