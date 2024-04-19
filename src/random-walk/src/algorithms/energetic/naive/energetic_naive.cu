@@ -144,30 +144,47 @@ bool algorithms::energetic::naive_method::generate_random_starting_points(int N)
 {
     model::particle* starting_points = new model::particle[N];
 
-    starting_points[0].x = starting_points[0].y = starting_points[0].z = 0;
-    srand((unsigned int)time(NULL));
-    for (int i = 1; i < N; i++)
+    curandState* dev_states = nullptr;
+    if (!cuda_check_continue(cudaMalloc(&dev_states, N * sizeof(curandState))))
     {
-        float versor_x = 2 * ((float)rand() / (float)(RAND_MAX)) - 1;
-        float versor_y = 2 * ((float)rand() / (float)(RAND_MAX)) - 1;
-        float versor_z = 2 * ((float)rand() / (float)(RAND_MAX)) - 1;
-        float versor_length = sqrt(versor_x * versor_x + versor_y * versor_y + versor_z * versor_z);
-        versor_x /= versor_length;
-        versor_y /= versor_length;
-        versor_z /= versor_length;
-        starting_points[i].x = starting_points[i - 1].x + versor_x;
-        starting_points[i].y = starting_points[i - 1].y + versor_y;
-        starting_points[i].z = starting_points[i - 1].z + versor_z;
-    }
-
-    if (!cuda_check_continue(cudaMemcpy(dev_points, starting_points, N * sizeof(model::particle), cudaMemcpyHostToDevice)))
-    {
-        dev_points = nullptr;
-        delete[] starting_points;
+        dev_states = nullptr;
         return false;
     }
 
-    delete[] starting_points;
+    model::particle* dev_unit_vectors = nullptr;
+    if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, N * sizeof(model::particle))))
+    {
+        dev_unit_vectors = nullptr;
+        return false;
+    }
+
+    /* Generate starting points */
+
+    int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
+    algorithms::directional_randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, N, std::time(nullptr), 0);
+    cuda_check_terminate(cudaDeviceSynchronize());
+
+    algorithms::directional_randomization::kernel_generate_random_unit_vectors << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_unit_vectors, dev_states, N);
+    model::particle init = { 0.0, 0.0, 0.0 };
+
+    // thrust no operator matches error resolved here https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
+    // eventually thrust does not implement operator+ for float3 or double3
+    thrust::device_ptr<model::particle> dev_unit_vectors_ptr = thrust::device_ptr<model::particle>(dev_unit_vectors);
+    thrust::device_ptr<model::particle> dev_points_ptr = thrust::device_ptr<model::particle>(dev_points);
+    model::add_particles add;
+    cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+
+    if (dev_unit_vectors)
+    {
+        cuda_check_terminate(cudaFree(dev_unit_vectors));
+        dev_unit_vectors = nullptr;
+    }
+    if (dev_states)
+    {
+        cuda_check_terminate(cudaFree(dev_states));
+        dev_states = nullptr;
+    }
+
     return true;
 }
 

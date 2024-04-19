@@ -1,13 +1,31 @@
 #include "common/common.cuh"
 #include "algorithms/abstract_method.h"
 #include "algorithms/model/particle.cuh"
+#include "algorithms/model/directional_randomization.cuh"
 #include "algorithms/energetic/validators/abstract_validator.h"
 #include "chimera/chimera.h";
 
 #include "curand_kernel.h"
+#include "thrust/scan.h"
+#include "thrust/device_ptr.h"
+
+
+#include "common/common.cuh"
+#include "algorithms/abstract_method.h"
+#include "algorithms/model/particle.cuh"
+#include "algorithms/model/randomization.cuh"
+#include "algorithms/energetic/validators/abstract_validator.h"
+#include "algorithms/constaces/math_constances.h"
+
+#include "curand_kernel.h"
+#include "thrust/scan.h"
+#include "thrust/device_ptr.h"
+
+#include <ctime>
 
 #define EN_NUMERIC_EPSILON std::numeric_limits<real_t>::epsilon()
 #define EN_PRECISION (100 * EN_NUMERIC_EPSILON)
+#define EN_BLOCK_SIZE 256
 
 namespace algorithms
 {

@@ -18,6 +18,7 @@
     <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
     <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
+    <ClInclude Include="src\algorithms\model\directional_randomization.cuh" />
     <ClInclude Include="src\algorithms\model\particle.cuh" />
     <ClInclude Include="src\algorithms\model\randomization.cuh" />
     <ClInclude Include="src\chimera\chimera.h" />
@@ -38,6 +39,7 @@
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
     <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
     <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\algorithms\model\directional_randomization.cu" />
     <CudaCompile Include="src\algorithms\model\particle.cu" />
     <CudaCompile Include="src\algorithms\model\randomization.cu" />
     <CudaCompile Include="src\common\common.cu" />
