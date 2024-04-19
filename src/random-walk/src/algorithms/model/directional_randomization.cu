@@ -23,8 +23,8 @@ __global__ void algorithms::directional_randomization::kernel_generate_random_un
 
 		for (int i = 0; i < k; i++)
 		{
-			alpha = acos(2 / PI * alpha - 1.0);
-			beta = acos(2 / PI * beta - 1.0);
+			alpha = acos(M_2_PI * alpha - 1.0);
+			beta = acos(M_2_PI * beta - 1.0);
 		}
 
 		/* Final beta value is in [0, 2*pi] */
