@@ -16,6 +16,8 @@
 	#define cuda_rand_uniform(state) curand_uniform_double(state)
 #endif
 
+using namespace algorithms::model;
+
 namespace algorithms
 {
 	namespace directional_randomization
