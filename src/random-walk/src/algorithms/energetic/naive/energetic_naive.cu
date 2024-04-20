@@ -85,7 +85,8 @@ bool algorithms::energetic::naive_method::run(algorithms::model::particle** resu
 {
     if (allocate_memory(N))
     {
-        generate_random_starting_points(N);
+        if (!algorithms::directional_randomization::generate_starting_points(dev_points, N))
+            return false;
 
 
         /* Create pdb file with points position before the start of the algorithm */
@@ -138,54 +139,6 @@ void algorithms::energetic::naive_method::release_memory()
         cuda_check_terminate(cudaFree(dev_points));
         dev_points = nullptr;
     }
-}
-
-bool algorithms::energetic::naive_method::generate_random_starting_points(int N)
-{
-    model::particle* starting_points = new model::particle[N];
-
-    curandState* dev_states = nullptr;
-    if (!cuda_check_continue(cudaMalloc(&dev_states, N * sizeof(curandState))))
-    {
-        dev_states = nullptr;
-        return false;
-    }
-
-    model::particle* dev_unit_vectors = nullptr;
-    if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, N * sizeof(model::particle))))
-    {
-        dev_unit_vectors = nullptr;
-        return false;
-    }
-
-    /* Generate starting points */
-
-    int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
-    algorithms::directional_randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, N, std::time(nullptr), 0);
-    cuda_check_terminate(cudaDeviceSynchronize());
-
-    algorithms::directional_randomization::kernel_generate_random_unit_vectors << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_unit_vectors, dev_states, N);
-    model::particle init = { 0.0, 0.0, 0.0 };
-
-    // thrust no operator matches error resolved here https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
-    // eventually thrust does not implement operator+ for float3 or double3
-    thrust::device_ptr<model::particle> dev_unit_vectors_ptr = thrust::device_ptr<model::particle>(dev_unit_vectors);
-    thrust::device_ptr<model::particle> dev_points_ptr = thrust::device_ptr<model::particle>(dev_points);
-    model::add_particles add;
-    cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
-
-    if (dev_unit_vectors)
-    {
-        cuda_check_terminate(cudaFree(dev_unit_vectors));
-        dev_unit_vectors = nullptr;
-    }
-    if (dev_states)
-    {
-        cuda_check_terminate(cudaFree(dev_states));
-        dev_states = nullptr;
-    }
-
-    return true;
 }
 
 algorithms::energetic::naive_method::naive_method(validators::abstract_validator& validator) : validator{ validator }
