@@ -26,7 +26,7 @@ namespace algorithms
 			public:
 				single_check_validator(int N = 0);
 				~single_check_validator();
-				virtual bool validate(model::vec3* dev_data, int N, float distance, float precision) override;
+				virtual bool validate(vector3* dev_data, int N, real_t distance, real_t precision) override;
 			};
 
 			void print_test(int test_number, int result, int expected);

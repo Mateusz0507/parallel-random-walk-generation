@@ -20,7 +20,7 @@ bool open_chimera(const std::string file_name)
 	return true;
 }
 
-bool create_pdb_file(algorithms::model::particle* points, const int N, const std::string file_name)
+bool create_pdb_file(vector3* points, const int N, const std::string file_name)
 {
 	if (N < 3) {
 		std::cerr << "Number of particles is less than 3!" << std::endl;

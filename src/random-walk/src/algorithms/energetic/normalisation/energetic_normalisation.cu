@@ -1,6 +1,6 @@
 #include "algorithms/energetic/normalisation/energetic_normalisation.cuh"
 
-__global__ void kernel_apply_forces_and_normalise(algorithms::model::particle* dev_points, algorithms::model::particle* dev_unit_vectors, int N)
+__global__ void kernel_apply_forces_and_normalise(vector3* dev_points, vector3* dev_unit_vectors, int N)
 {
 	int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (tid < N)
@@ -18,31 +18,31 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 	algorithms::randomization::kernel_generate_random_unit_vectors<<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_unit_vectors, dev_states, N);
 	
 	// determining particles
-	model::particle init = { 0.0, 0.0, 0.0 };
+	vector3 init = { 0.0, 0.0, 0.0 };
 
 	// thrust no operator matches error resolved here https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
 	// eventually thrust does not implement operator+ for float3 or double3
-	thrust::device_ptr<model::particle> dev_unit_vectors_ptr = thrust::device_ptr<model::particle>(dev_unit_vectors);
-	thrust::device_ptr<model::particle> dev_points_ptr = thrust::device_ptr<model::particle>(dev_points);
+	thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
+	thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
 	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
 
 	int iterations = 0;
 	do 
 	{
-		// determine the grid cell of particle
+		// determine the grid cell of vector3
 		// sort particles by grid cell index
 		// check near cells to find with 
 
 		// applying forces and normalising
 		
 		// determining new particles
-		cuda_check_errors_status_terminate(thrust::exclusive_scan<thrust::device_ptr<model::particle>>(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+		cuda_check_errors_status_terminate(thrust::exclusive_scan<thrust::device_ptr<vector3>>(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
 
 	} while (!validator.validate(dev_points, N, DISTANCE, EN_PRECISION) && iterations++ < max_iterations);
 	return iterations < max_iterations;
 }
 
-bool algorithms::energetic::normalisation_method::run(algorithms::model::particle** result, int N)
+bool algorithms::energetic::normalisation_method::run(vector3** result, int N)
 {
 	if (result && *result && allocate_memory(N))
 	{
@@ -70,14 +70,14 @@ bool algorithms::energetic::normalisation_method::allocate_memory(int N)
 	bool allocation_failure = false;
 
 	// allocation of unit vectors array
-	if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, sizeof(model::particle) * N)))
+	if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, sizeof(vector3) * N)))
 	{
 		dev_unit_vectors = nullptr;
 		allocation_failure = true;
 	}
 
 	// allocation of points array
-	if (!allocation_failure && !cuda_check_continue(cudaMalloc(&dev_points, sizeof(model::particle) * N)))
+	if (!allocation_failure && !cuda_check_continue(cudaMalloc(&dev_points, sizeof(vector3) * N)))
 	{
 		dev_points = nullptr;
 		allocation_failure = true;

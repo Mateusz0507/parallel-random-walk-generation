@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 		{
 			algorithms::energetic::validators::single_check_validator validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
 			algorithms::energetic::naive_method method = algorithms::energetic::naive_method::naive_method(validator);
-			algorithms::model::particle* result = new algorithms::model::particle[p.length];
+			vector3* result = new vector3[p.length];
 			method.run(&result, p.length);
 			if(create_pdb_file(result, p.length, "walk"))
 				open_chimera("walk");
