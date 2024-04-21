@@ -2,4 +2,5 @@
 
 #include <cmath>
 
-#define PI 2 * acos(0.0)
+#define PI 3.141592
+#define M_2_PI 2 / PI

@@ -42,8 +42,8 @@ namespace algorithms
 		{
 		private: 
 			validators::abstract_validator& validator;
-			model::particle* dev_unit_vectors = nullptr;
-			model::particle* dev_points = nullptr;
+			vector3* dev_unit_vectors = nullptr;
+			vector3* dev_points = nullptr;
 			curandState* dev_states = nullptr;
 			model::add_particles add;
 
@@ -54,7 +54,7 @@ namespace algorithms
 			bool generate_random_unit_vectors(int N);
 		public:
 			normalisation_method(validators::abstract_validator& validator);
-			virtual bool run(model::particle** result, int N) override;
+			virtual bool run(vector3** result, int N) override;
 		};
 	}
 }
