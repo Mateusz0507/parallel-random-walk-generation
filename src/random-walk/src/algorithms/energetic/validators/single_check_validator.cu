@@ -54,6 +54,8 @@ bool algorithms::energetic::validators::single_check_validator::validate(vector3
 	int invalid;
 	cuda_check_errors_status_terminate(invalid = thrust::reduce(dev_is_valid_ptr, dev_is_valid_ptr + N));
 
+	std::cout << "invalid: " << invalid << std::endl;
+
 	return invalid == 0;
 }
 

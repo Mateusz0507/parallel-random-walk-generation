@@ -20,3 +20,11 @@ bool cuda_check_status(const char* file, const int line, bool terminate)
 	return cuda_check(error, terminate);
 }
 
+void cuda_release(void** dev_ptr)
+{
+	if (dev_ptr && *dev_ptr)
+	{
+		cuda_check_terminate(cudaFree(*dev_ptr));
+		dev_ptr = nullptr;
+	}
+}

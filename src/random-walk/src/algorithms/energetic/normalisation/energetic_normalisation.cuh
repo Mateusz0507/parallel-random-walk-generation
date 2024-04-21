@@ -5,15 +5,18 @@
 #include "algorithms/energetic/validators/abstract_validator.h"
 #include "algorithms/constaces/math_constances.h"
 
+#include "chimera/chimera.h"
+
 #include "curand_kernel.h"
 #include "thrust/scan.h"
 #include "thrust/device_ptr.h"
 
 #include <ctime>
+#include <iostream>
 
 #define EN_NUMERIC_EPSILON std::numeric_limits<real_t>::epsilon()
 #define EN_PRECISION (100 * EN_NUMERIC_EPSILON)
-#define EN_MAX_ITERATIONS 100
+#define EN_MAX_ITERATIONS 200
 
 #define EN_BLOCK_SIZE 256
 
@@ -32,8 +35,6 @@
 	#define OFFSET 0
 #endif 
 
-using namespace algorithms::model;
-
 namespace algorithms
 {
 	namespace energetic
@@ -45,11 +46,12 @@ namespace algorithms
 			vector3* dev_unit_vectors = nullptr;
 			vector3* dev_points = nullptr;
 			curandState* dev_states = nullptr;
-			model::add_particles add;
+			model::add_particles add = model::add_particles();
 
 			bool main_loop(int N, int max_iterations);
 			bool allocate_memory(int N);
 			void cuda_release(void** dev_ptr);
+			void cuda_allocate(void** dev_ptr, int size, bool* allocation_failure);
 			void release_memory();
 			bool generate_random_unit_vectors(int N);
 		public:
