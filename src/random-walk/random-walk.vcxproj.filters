@@ -22,6 +22,8 @@
     <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\chimera\chimera.h" />
     <ClInclude Include="src\algorithms\model\directional_randomization.cuh" />
+    <ClInclude Include="src\algorithms\model\spherical_coordinates.cuh" />
+    <ClInclude Include="src\algorithms\model\matrix.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
@@ -38,6 +40,8 @@
     <CudaCompile Include="src\algorithms\model\randomization.cu" />
     <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
     <CudaCompile Include="src\algorithms\model\directional_randomization.cu" />
+    <CudaCompile Include="src\algorithms\model\spherical_coordinates.cu" />
+    <CudaCompile Include="src\algorithms\model\matrix.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

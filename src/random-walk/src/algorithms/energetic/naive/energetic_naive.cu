@@ -85,7 +85,7 @@ bool algorithms::energetic::naive_method::run(algorithms::model::particle** resu
 {
     if (allocate_memory(N))
     {
-        if (!algorithms::directional_randomization::generate_starting_points(dev_points, N))
+        if (!algorithms::directional_randomization::generate_starting_points(dev_points, N, 1, 5))
             return false;
 
 

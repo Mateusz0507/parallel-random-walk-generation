@@ -19,8 +19,10 @@
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
     <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
     <ClInclude Include="src\algorithms\model\directional_randomization.cuh" />
+    <ClInclude Include="src\algorithms\model\matrix.cuh" />
     <ClInclude Include="src\algorithms\model\particle.cuh" />
     <ClInclude Include="src\algorithms\model\randomization.cuh" />
+    <ClInclude Include="src\algorithms\model\spherical_coordinates.cuh" />
     <ClInclude Include="src\chimera\chimera.h" />
     <ClInclude Include="src\common\common.cuh" />
     <ClInclude Include="src\common\common.h" />
@@ -40,8 +42,10 @@
     <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
     <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
     <CudaCompile Include="src\algorithms\model\directional_randomization.cu" />
+    <CudaCompile Include="src\algorithms\model\matrix.cu" />
     <CudaCompile Include="src\algorithms\model\particle.cu" />
     <CudaCompile Include="src\algorithms\model\randomization.cu" />
+    <CudaCompile Include="src\algorithms\model\spherical_coordinates.cu" />
     <CudaCompile Include="src\common\common.cu" />
   </ItemGroup>
   <ItemGroup>
