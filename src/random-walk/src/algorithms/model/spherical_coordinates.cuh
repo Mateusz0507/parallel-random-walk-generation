@@ -10,10 +10,10 @@ namespace algorithms
 		class spherical_coordinates
 		{
 		public:
-			float alpha, beta;
+			real_t alpha, beta;
 
-			__device__ spherical_coordinates(float alpha, float beta);
-			__device__ static float3 get_vector(float alpha, float beta);
+			__device__ spherical_coordinates(real_t alpha, real_t beta);
+			__device__ static vector3 get_vector(real_t alpha, real_t beta);
 		};
 	}
 }

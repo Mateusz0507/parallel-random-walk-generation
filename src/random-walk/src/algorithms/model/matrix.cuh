@@ -12,11 +12,11 @@ namespace algorithms
 		class matrix
 		{
 		public:
-			float m[3][3];
+			real_t m[3][3];
 
-			matrix(float3 v1, float3 v2, float3 v3);
+			matrix(vector3 v1, vector3 v2, vector3 v3);
 			__device__ matrix(spherical_coordinates coords);
-			__device__ float3 multiply(float3 v);
+			__device__ vector3 multiply(vector3 v);
 		};
 	}
 }

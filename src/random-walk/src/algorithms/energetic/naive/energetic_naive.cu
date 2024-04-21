@@ -1,15 +1,15 @@
 #include "algorithms/energetic/naive/energetic_naive.cuh"
 
 
-__host__ __device__ float distance(vector3 p1, vector3 p2)
+__host__ __device__ real_t distance(vector3 p1, vector3 p2)
 {
-    float x_distance = p1.x - p2.x;
-    float y_distance = p1.y - p2.y;
-    float z_distance = p1.z - p2.z;
+    real_t x_distance = p1.x - p2.x;
+    real_t y_distance = p1.y - p2.y;
+    real_t z_distance = p1.z - p2.z;
     return sqrt(x_distance * x_distance + y_distance * y_distance + z_distance * z_distance);
 }
 
-__host__ __device__ float vector_length(float x, float y, float z)
+__host__ __device__ real_t vector_length(real_t x, real_t y, real_t z)
 {
     return sqrt(x * x + y * y + z * z);
 }
@@ -20,10 +20,10 @@ __global__ void iteration(vector3* particles, const int N)
     if (i >= N)
         return;
 
-    float spring_strength = 0.5;
-    float force_strength = 0.5;
-    float movement_x = 0, movement_y = 0, movement_z = 0;
-    float defect, direction_x, direction_y, direction_z, length;
+    real_t spring_strength = 0.5;
+    real_t force_strength = 0.5;
+    real_t movement_x = 0, movement_y = 0, movement_z = 0;
+    real_t defect, direction_x, direction_y, direction_z, length;
 
     if (i != 0)
     {

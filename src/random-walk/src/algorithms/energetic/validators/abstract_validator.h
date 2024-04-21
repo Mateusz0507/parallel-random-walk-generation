@@ -10,7 +10,7 @@ namespace algorithms
 			class abstract_validator
 			{
 			public:
-				virtual bool validate(vector3* dev_data, int N, float distance, float precision) = 0;
+				virtual bool validate(vector3* dev_data, int N, real_t distance, real_t precision) = 0;
 			};
 		}
 	}

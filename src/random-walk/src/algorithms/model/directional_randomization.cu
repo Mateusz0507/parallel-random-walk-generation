@@ -113,7 +113,7 @@ __global__ void algorithms::directional_randomization::kernel_generate_random_un
 		/* Final beta value is in [0, 2*pi] */
 		beta *= 2;
 
-        float3 v;
+        vector3 v;
         v.x = sin(alpha) * cos(beta);
         v.y = sin(alpha) * sin(beta);
         v.z = cos(alpha);

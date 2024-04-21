@@ -1,7 +1,7 @@
 #pragma once
 #include "algorithms/energetic/validators/single_check_validator.cuh"
 
-__global__ void kernel_validate(const vector3* dev_data, int N, const float distance, const float precision, int* dev_is_invalid)
+__global__ void kernel_validate(const vector3* dev_data, int N, const real_t distance, const real_t precision, int* dev_is_invalid)
 {
     const int index = threadIdx.x + blockIdx.x * blockDim.x;
 	if (index < N)
@@ -34,7 +34,7 @@ __global__ void kernel_validate(const vector3* dev_data, int N, const float dist
 	}
 }
 
-bool algorithms::energetic::validators::single_check_validator::validate(vector3* dev_data, int N, float distance, float precision)
+bool algorithms::energetic::validators::single_check_validator::validate(vector3* dev_data, int N, real_t distance, real_t precision)
 {
 	// checking parameters
 	if (dev_data == nullptr || N < 1 || distance < 0 || precision < 0)
