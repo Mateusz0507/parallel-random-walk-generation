@@ -1,7 +1,7 @@
 #include "algorithms/energetic/naive/energetic_naive.cuh"
 
 
-__host__ __device__ float distance(algorithms::model::particle p1, algorithms::model::particle p2)
+__host__ __device__ float distance(vector3 p1, vector3 p2)
 {
     float x_distance = p1.x - p2.x;
     float y_distance = p1.y - p2.y;
@@ -14,7 +14,7 @@ __host__ __device__ float vector_length(float x, float y, float z)
     return sqrt(x * x + y * y + z * z);
 }
 
-__global__ void iteration(algorithms::model::particle* particles, const int N)
+__global__ void iteration(vector3* particles, const int N)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= N)
@@ -81,7 +81,7 @@ __global__ void iteration(algorithms::model::particle* particles, const int N)
     particles[i].z += movement_z;
 }
 
-bool algorithms::energetic::naive_method::run(algorithms::model::particle** result, int N)
+bool algorithms::energetic::naive_method::run(vector3** result, int N)
 {
     if (allocate_memory(N))
     {
@@ -90,8 +90,8 @@ bool algorithms::energetic::naive_method::run(algorithms::model::particle** resu
 
 
         /* Create pdb file with points position before the start of the algorithm */
-        algorithms::model::particle* points_before_algorithm = new algorithms::model::particle[N];
-        if (!cuda_check_continue(cudaMemcpy(points_before_algorithm, dev_points, N * sizeof(model::particle), cudaMemcpyDeviceToHost)))
+        vector3* points_before_algorithm = new vector3[N];
+        if (!cuda_check_continue(cudaMemcpy(points_before_algorithm, dev_points, N * sizeof(vector3), cudaMemcpyDeviceToHost)))
         {
             release_memory();
             return false;
@@ -105,7 +105,7 @@ bool algorithms::energetic::naive_method::run(algorithms::model::particle** resu
             iteration<<<N/32 + 1, 32>>>(dev_points, N);
         }
 
-        if (!cuda_check_continue(cudaMemcpy(*result, dev_points, N * sizeof(model::particle), cudaMemcpyDeviceToHost)))
+        if (!cuda_check_continue(cudaMemcpy(*result, dev_points, N * sizeof(vector3), cudaMemcpyDeviceToHost)))
         {
             release_memory();
             return false;
@@ -123,7 +123,7 @@ bool algorithms::energetic::naive_method::allocate_memory(int N)
     if (N < 0)
         return false;
 
-    if (!cuda_check_continue(cudaMalloc(&dev_points, N * sizeof(model::particle))))
+    if (!cuda_check_continue(cudaMalloc(&dev_points, N * sizeof(vector3))))
     {
         dev_points = nullptr;
         return false;

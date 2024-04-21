@@ -1,7 +1,7 @@
 #pragma once
 #include "algorithms/energetic/validators/single_check_validator.cuh"
 
-__global__ void kernel_validate(const algorithms::model::particle* dev_data, int N, const float distance, const float precision, int* dev_is_invalid)
+__global__ void kernel_validate(const vector3* dev_data, int N, const float distance, const float precision, int* dev_is_invalid)
 {
     const int index = threadIdx.x + blockIdx.x * blockDim.x;
 	if (index < N)
@@ -14,7 +14,7 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 
 		if (index + 1 != N && abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1]) - distance) > precision)
 		{
-			// case when the following particle is in different distance than the specified as an parameter
+			// case when the following vector3 is in different distance than the specified as an parameter
 			invalid_count++;
 		}
 
@@ -34,7 +34,7 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 	}
 }
 
-bool algorithms::energetic::validators::single_check_validator::validate(model::particle* dev_data, int N, float distance, float precision)
+bool algorithms::energetic::validators::single_check_validator::validate(vector3* dev_data, int N, float distance, float precision)
 {
 	// checking parameters
 	if (dev_data == nullptr || N < 1 || distance < 0 || precision < 0)
@@ -97,12 +97,12 @@ void algorithms::energetic::validators::single_check_validator_test()
 	real_t precission = 100 * std::numeric_limits<real_t>::epsilon();
 	single_check_validator validator(N);
 	
-	model::particle* dev_particles;
-	int particle_size = sizeof(model::particle);
+	vector3* dev_particles;
+	int particle_size = sizeof(vector3);
 	cuda_check_terminate(cudaMalloc(&dev_particles, N * particle_size));
 
 	// Test 1
-	model::particle particles[] = { 0.0, 0.0, 0.0,
+	vector3 particles[] = { 0.0, 0.0, 0.0,
 									0.0, 1.0, 0.0,
 									1.0, 0.0, 0.0 };
 	

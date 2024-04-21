@@ -7,6 +7,6 @@ namespace algorithms
 {
 	namespace cpu
 	{
-		bool validate_sequentially(model::particle* result, int N, const float distance, const float precision, bool print = false);
+		bool validate_sequentially(vector3* result, int N, const float distance, const float precision, bool print = false);
 	}
 }

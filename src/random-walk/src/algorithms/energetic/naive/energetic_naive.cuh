@@ -19,12 +19,12 @@ namespace algorithms
 		{
 		private:
 			validators::abstract_validator& validator;
-			model::particle* dev_points = nullptr;
+			vector3* dev_points = nullptr;
 			bool allocate_memory(int N);
 			void release_memory();
 		public:
 			naive_method(validators::abstract_validator& validator);
-			virtual bool run(model::particle** result, int N) override;
+			virtual bool run(vector3** result, int N) override;
 		};
 	}
 }

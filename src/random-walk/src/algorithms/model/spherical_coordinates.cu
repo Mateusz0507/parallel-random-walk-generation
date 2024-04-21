@@ -12,7 +12,7 @@ __device__ float3 algorithms::model::spherical_coordinates::get_vector(float alp
 	float y = sin(alpha) * sin(beta);
 	float z = cos(alpha);
 
-	particle vector;
+	vector3 vector;
 	vector.x = x;
 	vector.y = y;
 	vector.z = z;

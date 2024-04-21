@@ -6,6 +6,6 @@ namespace algorithms
 	class abstract_method
 	{
 	public:
-		virtual bool run(model::particle** result, int N) = 0;
+		virtual bool run(vector3** result, int N) = 0;
 	};
 }

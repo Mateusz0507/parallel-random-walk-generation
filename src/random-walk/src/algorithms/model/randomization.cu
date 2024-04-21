@@ -7,7 +7,7 @@ __global__ void algorithms::randomization::kernel_setup(curandState* dev_states,
 	if(tid < N) curand_init(seed, tid, offset, &dev_states[tid]);
 }
 
-__global__ void algorithms::randomization::kernel_generate_random_unit_vectors(algorithms::model::particle * dev_unit_vectors, curandState * dev_states, int N)
+__global__ void algorithms::randomization::kernel_generate_random_unit_vectors(vector3 * dev_unit_vectors, curandState * dev_states, int N)
 {
 	const int tid = threadIdx.x + blockIdx.x * blockDim.x;
 	if (tid < N)
