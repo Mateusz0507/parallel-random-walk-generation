@@ -8,8 +8,6 @@
 
 #define DEFAULT_PARAMS_COUNT 2
 
-using namespace std;
-
 namespace program_parametrization
 {
 	struct parameters {

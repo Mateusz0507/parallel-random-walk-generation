@@ -17,6 +17,7 @@
 #include "constants.h"
 #include "parametrization/program_parametrization.h"
 #include "algorithms/model/particle.cuh"
+#include "algorithms/energetic/energetic.h"
 
 using namespace std;
 using namespace program_parametrization;

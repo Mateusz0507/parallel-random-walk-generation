@@ -23,16 +23,11 @@ namespace algorithms
 {
 	namespace model
 	{
-		struct particle_soa
-		{
-			real_t *dev_x, *dev_y, *dev_z;
-		};
-
 		__host__ __device__ real_t get_distance(const vector3& a, const vector3& b);
 
 		__host__ __device__ real_t get_distance(real_t ax, real_t ay, real_t az, real_t bx, real_t by, real_t bz);
 
-
+		__host__ __device__ real_t norm(const vector3& a);
 		class add_particles
 		{
 		public:

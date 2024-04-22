@@ -1,23 +1,24 @@
 #include "main.h"
 #include "chimera/chimera.h"
 
-#include "algorithms/energetic/naive/energetic_naive.cuh"
-#include "algorithms/energetic/validators/single_check_validator.cuh"
-
 
 int main(int argc, char** argv)
 {
 	parameters p;
 	if (read(argc, argv, p))
 	{
+		p.length = 10000;
 		if (p.method == 0)
 		{
-			algorithms::energetic::validators::single_check_validator validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
-			algorithms::energetic::naive_method method = algorithms::energetic::naive_method::naive_method(validator);
+			auto validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
+			// algorithms::energetic::naive_method method = algorithms::energetic::naive_method::naive_method(validator);
+			auto method = algorithms::energetic::normalisation_method(validator);
+			
 			vector3* result = new vector3[p.length];
 			method.run(&result, p.length);
-			if(create_pdb_file(result, p.length, "walk"))
-				open_chimera("walk");
+			if (create_pdb_file(result, p.length, "walk"));
+				// open_chimera("walk");
+			delete[] result;
 		}
 	}
 }

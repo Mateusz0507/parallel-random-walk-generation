@@ -54,6 +54,8 @@ bool algorithms::energetic::validators::single_check_validator::validate(vector3
 	int invalid;
 	cuda_check_errors_status_terminate(invalid = thrust::reduce(dev_is_valid_ptr, dev_is_valid_ptr + N));
 
+	std::cout << "invalid: " << invalid << std::endl;
+
 	return invalid == 0;
 }
 
@@ -94,7 +96,7 @@ void algorithms::energetic::validators::single_check_validator_test()
 {
 	int N = 3;
 	real_t distance = 1.0;
-	real_t precission = 100 * std::numeric_limits<real_t>::epsilon();
+	real_t precision = 100 * std::numeric_limits<real_t>::epsilon();
 	single_check_validator validator(N);
 	
 	vector3* dev_particles;
@@ -108,9 +110,9 @@ void algorithms::energetic::validators::single_check_validator_test()
 	
 	cuda_check_terminate(cudaMemcpy(dev_particles, &particles, N * particle_size, cudaMemcpyHostToDevice));
 
-	int result = validator.validate(dev_particles, N, distance, precission);
+	int result = validator.validate(dev_particles, N, distance, precision);
 
-	print_test(1, result, 1);
+	print_test(1, result, 0);
 
 	// releasing memory
 	cuda_check_terminate(cudaFree(dev_particles));

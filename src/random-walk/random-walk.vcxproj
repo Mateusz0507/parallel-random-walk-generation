@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="src\algorithms\abstract_method.h" />
     <ClInclude Include="src\algorithms\constaces\math_constances.h" />
+    <ClInclude Include="src\algorithms\energetic\energetic.h" />
     <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
     <ClInclude Include="src\algorithms\energetic\normalisation\energetic_normalisation.cuh" />
     <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
