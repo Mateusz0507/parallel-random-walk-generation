@@ -50,7 +50,6 @@ namespace algorithms
 
 			bool main_loop(int N, int max_iterations);
 			bool allocate_memory(int N);
-			void cuda_release(void** dev_ptr);
 			void cuda_allocate(void** dev_ptr, int size, bool* allocation_failure);
 			void release_memory();
 			bool generate_random_unit_vectors(int N);

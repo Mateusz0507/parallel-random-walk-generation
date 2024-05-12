@@ -138,16 +138,6 @@ void algorithms::energetic::normalisation_method::cuda_allocate(void** dev_ptr, 
 	}
 }
 
-// TODO: move it somewhere so that it could be used to freeing memory
-void algorithms::energetic::normalisation_method::cuda_release(void** dev_ptr)
-{
-	if (dev_ptr && *dev_ptr)
-	{
-		cuda_check_terminate(cudaFree(*dev_ptr));
-		dev_ptr = nullptr;
-	}
-}
-
 void algorithms::energetic::normalisation_method::release_memory()
 {
 	// freeing the memory if is allocated
