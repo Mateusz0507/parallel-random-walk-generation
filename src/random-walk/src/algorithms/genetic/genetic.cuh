@@ -13,7 +13,7 @@ namespace algorithms
 			virtual bool run(vector3** result, int N) override;
 		protected:
 			vector3* dev_particles;
-			int* dev_population_idx;
+			int* dev_generation_idx;
 			int* dev_fitness;
 
 			bool init(int N, int population);

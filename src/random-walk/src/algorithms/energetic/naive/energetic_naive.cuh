@@ -2,7 +2,7 @@
 #include "algorithms/abstract_method.h"
 #include "algorithms/model/particle.cuh"
 #include "algorithms/model/directional_randomization.cuh"
-#include "algorithms/energetic/validators/abstract_validator.h"
+#include "algorithms/validators/abstract_validator.h"
 #include "chimera/chimera.h";
 
 #include "curand_kernel.h"

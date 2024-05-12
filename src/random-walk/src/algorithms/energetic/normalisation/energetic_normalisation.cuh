@@ -2,7 +2,7 @@
 #include "algorithms/abstract_method.h"
 #include "algorithms/model/particle.cuh"
 #include "algorithms/model/randomization.cuh"
-#include "algorithms/energetic/validators/abstract_validator.h"
+#include "algorithms/validators/abstract_validator.h"
 #include "algorithms/constaces/math_constances.h"
 
 #include "chimera/chimera.h"
