@@ -1,5 +1,10 @@
 #include "algorithms/genetic/genetic.cuh"
 
+bool algorithms::genetic::genetic_method::init(int N, int population)
+{
+	
+}
+
 bool algorithms::genetic::genetic_method::run(int N, int population, vector3** particles)
 {
 	if (init(N, population))

@@ -50,9 +50,7 @@ namespace algorithms
 
 			bool main_loop(int N, int max_iterations);
 			bool allocate_memory(int N);
-			void cuda_allocate(void** dev_ptr, int size, bool* allocation_failure);
 			void release_memory();
-			bool generate_random_unit_vectors(int N);
 		public:
 			normalisation_method(validators::abstract_validator& validator);
 			virtual bool run(vector3** result, int N) override;

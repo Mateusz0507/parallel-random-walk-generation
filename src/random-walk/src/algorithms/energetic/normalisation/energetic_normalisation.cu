@@ -129,28 +129,12 @@ bool algorithms::energetic::normalisation_method::allocate_memory(int N)
 	return true;
 }
 
-void algorithms::energetic::normalisation_method::cuda_allocate(void** dev_ptr, int size, bool* allocation_failure)
-{
-	if (!*allocation_failure && !cuda_check_continue(cudaMalloc(dev_ptr, size)))
-	{
-		*allocation_failure = true;
-		*dev_ptr = nullptr;
-	}
-}
-
 void algorithms::energetic::normalisation_method::release_memory()
 {
 	// freeing the memory if is allocated
 	cuda_release((void**)&dev_unit_vectors);
 	cuda_release((void**)&dev_points);
 	cuda_release((void**)&dev_states);
-}
-
-bool algorithms::energetic::normalisation_method::generate_random_unit_vectors(int N)
-{
-
-
-	return false;
 }
 
 algorithms::energetic::normalisation_method::normalisation_method(validators::abstract_validator& validator): validator{validator}

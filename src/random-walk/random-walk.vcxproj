@@ -19,6 +19,7 @@
     <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
     <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
+    <ClInclude Include="src\algorithms\genetic\genetic.cuh" />
     <ClInclude Include="src\algorithms\model\directional_randomization.cuh" />
     <ClInclude Include="src\algorithms\model\matrix.cuh" />
     <ClInclude Include="src\algorithms\model\particle.cuh" />
@@ -32,8 +33,10 @@
     <ClInclude Include="src\parametrization\program_parametrization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\algorithms\abstract_method.cpp" />
     <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
     <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
+    <ClCompile Include="src\algorithms\genetic\genetic.cpp" />
     <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
