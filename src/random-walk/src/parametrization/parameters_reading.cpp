@@ -39,7 +39,7 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
             p.directional_level = atoi(value);
         }
         else if (std::string(parameter) == "-s" || std::string(parameter) == "--segments-number") {
-            p.segments = atoi(value);
+            p.segments_number = atoi(value);
         }
         else
         {

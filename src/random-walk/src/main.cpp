@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 		algorithms::energetic::naive_method::parameters naive_parameters;
 		naive_parameters.N = p.N;
 		naive_parameters.directional_level = p.directional_level;
-		naive_parameters.segments_number = p.segments;
+		naive_parameters.segments_number = p.segments_number;
 
 		method.run(&result, &naive_parameters);
 	}
