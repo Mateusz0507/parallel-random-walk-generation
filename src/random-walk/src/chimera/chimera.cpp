@@ -3,7 +3,7 @@
 
 bool open_chimera(const std::string file_name)
 {
-	std::string command = CHIMERA_PATH + " " + PDB_FILES_FOLDER_PATH + "/" + file_name + ".pdb";;
+	std::string command = CHIMERA_PATH + " " + executable_path() + PDB_FILES_FOLDER_PATH_RELATIVE_TO_EXE + file_name + ".pdb";
 
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
@@ -20,6 +20,20 @@ bool open_chimera(const std::string file_name)
 	return true;
 }
 
+std::string executable_path() {
+#ifdef _WIN32
+	char buffer[MAX_PATH];
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	return std::string(buffer);
+#elif __linux__
+	char buffer[PATH_MAX];
+	readlink("/proc/self/exe", buffer, sizeof(buffer));
+	return std::string(buffer);
+#else
+#error Unsupported platform
+#endif
+}
+
 bool create_pdb_file(vector3* points, const int N, const std::string file_name)
 {
 	if (N < 3) {
@@ -27,7 +41,7 @@ bool create_pdb_file(vector3* points, const int N, const std::string file_name)
 		return false;
 	}
 
-	std::string file_path = PDB_FILES_FOLDER_PATH + "/" + file_name + ".pdb";
+	std::string file_path = executable_path() + PDB_FILES_FOLDER_PATH_RELATIVE_TO_EXE + file_name + ".pdb";
 	std::ofstream file(file_path);
 
 	if (!file) {
