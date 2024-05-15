@@ -55,8 +55,13 @@ namespace algorithms
 			void release_memory();
 			bool generate_random_unit_vectors(int N);
 		public:
+			struct parameters
+			{
+				int N;
+			};
+
 			normalisation_method(validators::abstract_validator& validator);
-			virtual bool run(vector3** result, int N) override;
+			virtual bool run(vector3** result, void*) override;
 		};
 	}
 }

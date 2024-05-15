@@ -12,7 +12,7 @@ namespace program_parametrization
 		char* method = "naive";
 		int N = 100;
 		int directional_level = 0;
-		int segments = 0;
+		int segments = 1;
 	};
 
 	void print_usage(const char* name);

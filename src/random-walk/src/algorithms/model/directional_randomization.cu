@@ -5,7 +5,10 @@
 bool algorithms::directional_randomization::generate_starting_points(
     vector3* dev_points, const int N, const int directional_parametr, const int number_of_segments)
 {
-    if (N < number_of_segments)
+    if (directional_parametr > 0 && N < number_of_segments)
+        return false;
+
+    if (number_of_segments < 1)
         return false;
 
     int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
