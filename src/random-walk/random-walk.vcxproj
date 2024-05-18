@@ -16,9 +16,9 @@
     <ClInclude Include="src\algorithms\energetic\energetic.h" />
     <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
     <ClInclude Include="src\algorithms\energetic\normalisation\energetic_normalisation.cuh" />
-    <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
+    <ClInclude Include="src\algorithms\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
-    <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
+    <ClInclude Include="src\algorithms\validators\single_check_validator.cuh" />
     <ClInclude Include="src\algorithms\genetic\genetic.cuh" />
     <ClInclude Include="src\algorithms\model\directional_randomization.cuh" />
     <ClInclude Include="src\algorithms\model\matrix.cuh" />
@@ -35,7 +35,7 @@
   <ItemGroup>
     <ClCompile Include="src\algorithms\abstract_method.cpp" />
     <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
-    <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
+    <ClCompile Include="src\algorithms\validators\abstract_validator.cpp" />
     <ClCompile Include="src\algorithms\genetic\genetic.cpp" />
     <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -44,7 +44,7 @@
   <ItemGroup>
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
     <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
-    <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\algorithms\validators\single_check_validator.cu" />
     <CudaCompile Include="src\algorithms\model\directional_randomization.cu" />
     <CudaCompile Include="src\algorithms\model\matrix.cu" />
     <CudaCompile Include="src\algorithms\model\particle.cu" />

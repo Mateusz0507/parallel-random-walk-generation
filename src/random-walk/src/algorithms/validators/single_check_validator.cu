@@ -1,5 +1,5 @@
 #pragma once
-#include "algorithms/energetic/validators/single_check_validator.cuh"
+#include "algorithms/validators/single_check_validator.cuh"
 
 __global__ void kernel_validate(const vector3* dev_data, int N, const real_t distance, const real_t precision, int* dev_is_invalid)
 {
@@ -34,7 +34,7 @@ __global__ void kernel_validate(const vector3* dev_data, int N, const real_t dis
 	}
 }
 
-bool algorithms::energetic::validators::single_check_validator::validate(vector3* dev_data, int N, real_t distance, real_t precision)
+bool algorithms::validators::single_check_validator::validate(vector3* dev_data, int N, real_t distance, real_t precision)
 {
 	// checking parameters
 	if (dev_data == nullptr || N < 1 || distance < 0 || precision < 0)
@@ -59,7 +59,7 @@ bool algorithms::energetic::validators::single_check_validator::validate(vector3
 	return invalid == 0;
 }
 
-bool algorithms::energetic::validators::single_check_validator::prepare_device_memory(int N)
+bool algorithms::validators::single_check_validator::prepare_device_memory(int N)
 {
 	if (validation_array_size < N)
 	{
@@ -73,7 +73,7 @@ bool algorithms::energetic::validators::single_check_validator::prepare_device_m
 	return true;
 }
 
-algorithms::energetic::validators::single_check_validator::single_check_validator(int N)
+algorithms::validators::single_check_validator::single_check_validator(int N)
 {
 	if (N > 0)
 	{
@@ -82,17 +82,17 @@ algorithms::energetic::validators::single_check_validator::single_check_validato
 	}
 }
 
-algorithms::energetic::validators::single_check_validator::~single_check_validator()
+algorithms::validators::single_check_validator::~single_check_validator()
 {
 	cuda_check_terminate(cudaFree(dev_is_invalid));
 }
 
-void algorithms::energetic::validators::print_test(int test_number, int result, int expected)
+void algorithms::validators::print_test(int test_number, int result, int expected)
 {
 	std::cout << "Test " << test_number << ": " << "returned " << result << ", expected " << expected << std::endl;
 }
 
-void algorithms::energetic::validators::single_check_validator_test()
+void algorithms::validators::single_check_validator_test()
 {
 	int N = 3;
 	real_t distance = 1.0;

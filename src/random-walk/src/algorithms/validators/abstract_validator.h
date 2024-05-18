@@ -3,15 +3,12 @@
 
 namespace algorithms
 {
-	namespace energetic
+	namespace validators
 	{
-		namespace validators
+		class abstract_validator
 		{
-			class abstract_validator
-			{
-			public:
-				virtual bool validate(vector3* dev_data, int N, real_t distance, real_t precision) = 0;
-			};
-		}
+		public:
+			virtual bool validate(vector3* dev_data, int N, real_t distance, real_t precision) = 0;
+		};
 	}
 }

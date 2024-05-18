@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 		// p.length = 10000;
 		if (p.method == 0)
 		{
-			auto validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
+			auto validator = algorithms::validators::single_check_validator::single_check_validator();
 			auto method = algorithms::energetic::naive_method::naive_method(validator);
 			// auto method = algorithms::energetic::normalisation_method(validator);
 			
