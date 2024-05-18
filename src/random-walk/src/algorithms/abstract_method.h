@@ -10,5 +10,6 @@ namespace algorithms
 	protected:
 		void cuda_release(void** dev_ptr);
 		void cuda_allocate(void** dev_ptr, int size, bool* allocation_failure);
+		virtual bool run(vector3** result, void*) = 0;
 	};
 }

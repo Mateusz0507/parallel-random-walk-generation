@@ -12,5 +12,6 @@
 #include "constants.h"
 #include "algorithms/model/particle.cuh"
 
+std::string executable_path();
 bool open_chimera(const std::string file_name);
 bool create_pdb_file(vector3* points, const int N, const std::string file_name);

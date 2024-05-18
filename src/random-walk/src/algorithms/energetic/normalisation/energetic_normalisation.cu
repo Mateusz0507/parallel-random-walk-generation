@@ -86,20 +86,22 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 	return iterations < max_iterations || max_iterations < 0;
 }
 
-bool algorithms::energetic::normalisation_method::run(vector3** result, int N)
+bool algorithms::energetic::normalisation_method::run(vector3** result, void* p_void)
 {
-	if (result && *result && allocate_memory(N))
+	parameters* p = (parameters*)p_void;
+	
+	if (result && *result && allocate_memory(p->N))
 	{
-		int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
+		int number_of_blocks = (p->N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
 
 		// setting seed
-		algorithms::randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, N, time(0), OFFSET);
+		algorithms::randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, p->N, time(0), OFFSET);
 		cuda_check_terminate(cudaDeviceSynchronize());
 
 		// main loop
-		while (!main_loop(N, EN_MAX_ITERATIONS));
+		while (!main_loop(p->N, EN_MAX_ITERATIONS));
 
-		cuda_check_terminate(cudaMemcpy(*result, dev_points, sizeof(vector3) * N, cudaMemcpyDeviceToHost));
+		cuda_check_terminate(cudaMemcpy(*result, dev_points, sizeof(vector3) * p->N, cudaMemcpyDeviceToHost));
 
 		release_memory();
 		return true;

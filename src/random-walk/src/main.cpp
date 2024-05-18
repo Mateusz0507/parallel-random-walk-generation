@@ -5,20 +5,35 @@
 int main(int argc, char** argv)
 {
 	parameters p;
-	if (read(argc, argv, p))
+
+	if (!read(argc, argv, p))
+		return 1;
+
+	auto validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
+	vector3* result = new vector3[p.N];
+
+	if (std::string(p.method) == "naive")
 	{
-		// p.length = 10000;
-		if (p.method == 0)
-		{
-			auto validator = algorithms::validators::single_check_validator::single_check_validator();
-			auto method = algorithms::energetic::naive_method::naive_method(validator);
-			// auto method = algorithms::energetic::normalisation_method(validator);
-			
-			vector3* result = new vector3[p.length];
-			method.run(&result, p.length);
-			if (create_pdb_file(result, p.length, "walk"));
-				open_chimera("walk");
-			delete[] result;
-		}
+		auto method = algorithms::energetic::naive_method::naive_method(validator);
+
+		algorithms::energetic::naive_method::parameters naive_parameters;
+		naive_parameters.N = p.N;
+		naive_parameters.directional_level = p.directional_level;
+		naive_parameters.segments_number = p.segments_number;
+
+		method.run(&result, &naive_parameters);
 	}
+	else if (std::string(p.method) == "normalization")
+	{
+		auto method = algorithms::energetic::normalisation_method(validator);
+
+		algorithms::energetic::normalisation_method::parameters normalization_parameters;
+		normalization_parameters.N = p.N;
+
+		method.run(&result, &normalization_parameters);
+	}
+
+	if (create_pdb_file(result, p.N, "walk"));
+		open_chimera("walk");
+	delete[] result;
 }

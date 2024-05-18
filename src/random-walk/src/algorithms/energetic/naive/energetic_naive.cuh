@@ -23,8 +23,15 @@ namespace algorithms
 			bool allocate_memory(int N);
 			void release_memory();
 		public:
+			struct parameters
+			{
+				int N;
+				int directional_level;
+				int segments_number;
+			};
+
 			naive_method(validators::abstract_validator& validator);
-			virtual bool run(vector3** result, int N) override;
+			virtual bool run(vector3** result, void*) override;
 		};
 	}
 }

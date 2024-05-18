@@ -81,31 +81,33 @@ __global__ void iteration(vector3* particles, const int N)
     particles[i].z += movement_z;
 }
 
-bool algorithms::energetic::naive_method::run(vector3** result, int N)
+bool algorithms::energetic::naive_method::run(vector3** result, void* p_void)
 {
-    if (allocate_memory(N))
+    parameters* p = (parameters*)p_void;
+
+    if (allocate_memory(p->N))
     {
-        if (!algorithms::directional_randomization::generate_starting_points(dev_points, N, 1, 50))
+        if (!algorithms::directional_randomization::generate_starting_points(dev_points, p->N, p->directional_level, p->segments_number))
             return false;
 
 
         /* Create pdb file with points position before the start of the algorithm */
-        vector3* points_before_algorithm = new vector3[N];
-        if (!cuda_check_continue(cudaMemcpy(points_before_algorithm, dev_points, N * sizeof(vector3), cudaMemcpyDeviceToHost)))
+        vector3* points_before_algorithm = new vector3[p->N];
+        if (!cuda_check_continue(cudaMemcpy(points_before_algorithm, dev_points, p->N * sizeof(vector3), cudaMemcpyDeviceToHost)))
         {
             release_memory();
             return false;
         }
-        create_pdb_file(points_before_algorithm, N, "before");
+        create_pdb_file(points_before_algorithm, p->N, "before");
         open_chimera("before");
 
 
-        while (!validator.validate(dev_points, N, DISTANCE, EN_PRECISION))
+        while (!validator.validate(dev_points, p->N, DISTANCE, EN_PRECISION))
         {
-            iteration<<<N/32 + 1, 32>>>(dev_points, N);
+            iteration<<<p->N /32 + 1, 32>>>(dev_points, p->N);
         }
 
-        if (!cuda_check_continue(cudaMemcpy(*result, dev_points, N * sizeof(vector3), cudaMemcpyDeviceToHost)))
+        if (!cuda_check_continue(cudaMemcpy(*result, dev_points, p->N * sizeof(vector3), cudaMemcpyDeviceToHost)))
         {
             release_memory();
             return false;
