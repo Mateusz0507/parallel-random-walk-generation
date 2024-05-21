@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="src\algorithms\abstract_method.h" />
     <ClInclude Include="src\algorithms\constaces\math_constances.h" />
+    <ClInclude Include="src\algorithms\cuda_memory_releaser.cuh" />
     <ClInclude Include="src\algorithms\energetic\energetic.h" />
     <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
     <ClInclude Include="src\algorithms\energetic\normalisation\energetic_normalisation.cuh" />
@@ -41,6 +42,7 @@
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="src\algorithms\cuda_memory_releaser.cu" />
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
     <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
     <CudaCompile Include="src\algorithms\genetic\genetic.cu" />
