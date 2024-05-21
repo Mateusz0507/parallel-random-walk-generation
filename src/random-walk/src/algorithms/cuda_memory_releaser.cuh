@@ -5,7 +5,7 @@
 class cuda_memory_releaser
 {
 public:
-	cuda_memory_releaser& get();
+	static cuda_memory_releaser& get();
 
 	bool log(void* dev_ptr);
 	bool unregister(void* dev_ptr);
