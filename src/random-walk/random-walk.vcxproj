@@ -36,7 +36,6 @@
     <ClCompile Include="src\algorithms\abstract_method.cpp" />
     <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
     <ClCompile Include="src\algorithms\validators\abstract_validator.cpp" />
-    <ClCompile Include="src\algorithms\genetic\genetic.cpp" />
     <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
@@ -44,6 +43,7 @@
   <ItemGroup>
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
     <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
+    <CudaCompile Include="src\algorithms\genetic\genetic.cu" />
     <CudaCompile Include="src\algorithms\validators\single_check_validator.cu" />
     <CudaCompile Include="src\algorithms\model\directional_randomization.cu" />
     <CudaCompile Include="src\algorithms\model\matrix.cu" />

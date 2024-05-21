@@ -18,22 +18,30 @@ namespace algorithms
 		class genetic_method : public abstract_method
 		{
 		public:
-			virtual bool run(vector3** result, int N) override;
+			virtual bool run(vector3** result, void* parameters) override;
+
+			struct parameters {
+				int N;
+				int generation_size;
+			};
 		protected:
-			algorithms::validators::abstract_validator& validator;
+			int N;
+			int generation_size;
+			int* fitness;
+
 			vector3* dev_unit_vectors = nullptr;
-			vector3* dev_particles = nullptr;
+			vector3* dev_chromosomes = nullptr;
 			int* dev_generation_idx = nullptr;
 			int* dev_fitness = nullptr;
+			int* dev_invalid_distances;
 			curandState* dev_states = nullptr;
 
-			bool init(int N, int population);
-			bool run(int N, int population, vector3** particles);
-			void first_generation(int N, int population);
-			void next_generation(int N, int population);
-			void fitness_function(int N, int population);
-			int select_population(int N, int population);
-			void copy_solution(int N, int idx, vector3** particles);
+			bool init(parameters* parameters);
+			void first_generation();
+			void next_generation();
+			void fitness_function();
+			int select_population(int iteration);
+			void copy_solution(vector3** particles, int idx);
 			void terminate();
 		};
 	}
