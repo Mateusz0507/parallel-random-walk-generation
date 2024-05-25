@@ -70,7 +70,7 @@ bool algorithms::directional_randomization::generate_starting_points(
     return true;
 }
 
-__global__ void algorithms::directional_randomization::generate_segments_directions(matrix* dev_segments_directions_matrices, curandState* dev_states, int number_of_segments, uint64_t seed)
+__global__ void algorithms::directional_randomization::kernel_generate_segments_directions(matrix* dev_segments_directions_matrices, curandState* dev_states, int number_of_segments, uint64_t seed)
 {
     /*
     * Generation of starting points can be directed towards [1, 0, 0] direction.
