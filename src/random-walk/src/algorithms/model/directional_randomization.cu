@@ -37,7 +37,7 @@ bool algorithms::directional_randomization::generate_starting_points(
         return false;
     }
 
-    generate_segments_directions << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_segments_directions_matrices, dev_states, number_of_segments, 0);
+    kernel_generate_segments_directions << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_segments_directions_matrices, dev_states, number_of_segments, 0);
     
     kernel_generate_random_unit_vectors << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_unit_vectors, dev_states, dev_segments_directions_matrices, number_of_segments, N, directional_parametr);
     vector3 init = { 0.0, 0.0, 0.0 };

@@ -17,6 +17,8 @@ namespace algorithms
 		class genetic_method : public abstract_method
 		{
 		public:
+			genetic_method();
+
 			virtual bool run(vector3** result, void* parameters) override;
 
 			struct parameters {
@@ -31,12 +33,21 @@ namespace algorithms
 			float mutation_ratio;
 			int* fitness;
 			int* new_generation_idx;
+			int number_of_blocks;
+			int generation_number_of_blocks;
+
+			std::random_device rand_device;
+			std::mt19937 generator;
+			std::uniform_int_distribution<> first_parent_distribution;
+			std::uniform_int_distribution<> second_parent_distribution;
+			std::uniform_int_distribution<> crossover_point_distribution;
 
 			vector3* dev_random_walk = nullptr;
 			vector3* dev_chromosomes = nullptr;
 			int* dev_generation_idx = nullptr;
 			int* dev_fitness = nullptr;
 			int* dev_invalid_distances;
+
 			curandState* dev_states = nullptr;
 
 			bool init(parameters* parameters);

@@ -1,17 +1,22 @@
-#include "algorithms/genetic/genetic.cuh"
-#include "algorithms/model/randomization.cuh"
+#include <random>
+
 #include "thrust/scan.h"
-#include "algorithms/model/particle.cuh"
 #include "thrust/reduce.h"
 #include "thrust/device_ptr.h"
 #include "thrust/sort.h"
 #include "thrust/iterator/zip_iterator.h"
+
+#include "algorithms/genetic/genetic.cuh"
+#include "algorithms/model/randomization.cuh"
+#include "algorithms/model/particle.cuh"
 
 bool algorithms::genetic::genetic_method::init(parameters* params)
 {
 	N = params->N;
 	generation_size = params->generation_size;
 	mutation_ratio = params->mutation_ratio;
+	number_of_blocks = (N + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
+	generation_number_of_blocks = (generation_size + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
 	
 	bool allocation_failure = false;
 
@@ -35,7 +40,14 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 
 	if (!allocation_failure)
 	{
-		algorithms::randomization::kernel_setup(dev_states, N, time(0), 0); // refactor passing arguments
+		// initializing curand
+		algorithms::randomization::kernel_setup<<< number_of_blocks, G_BLOCK_SIZE>>>(dev_states, N, time(0), 0); // refactor passing arguments
+		cuda_check_terminate(cudaDeviceSynchronize());
+
+		// initializing cpu random engine
+		first_parent_distribution = std::uniform_int_distribution<>(0, generation_size - 1);
+		second_parent_distribution = std::uniform_int_distribution<>(0, generation_size - 1 >= 0 ? generation_size - 1 : 0);
+		crossover_point_distribution = std::uniform_int_distribution<>(0, N);
 	}
 
 	if (allocation_failure)
@@ -44,6 +56,12 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 	}
 
 	return !allocation_failure;
+}
+
+algorithms::genetic::genetic_method::genetic_method()
+	: rand_device{}, generator{rand_device()}
+{
+
 }
 
 bool algorithms::genetic::genetic_method::run(vector3** particles, void* params)
@@ -78,7 +96,6 @@ __global__ void kernel_init_tables(int generation_size, int* dev_generation_idx,
 void algorithms::genetic::genetic_method::first_generation()
 {
 	// generating random walks
-	int number_of_blocks = (N + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
 	for (int i = 0; i < generation_size; i++)
 	{
 		algorithms::randomization::kernel_generate_random_unit_vectors<<<number_of_blocks, G_BLOCK_SIZE>>>(dev_unit_vectors + i * N, dev_states, N);
@@ -86,7 +103,6 @@ void algorithms::genetic::genetic_method::first_generation()
 	}
 
 	// initializing idx and fitness function arrays
-	int generation_number_of_blocks = (generation_size + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
 	kernel_init_tables << <generation_number_of_blocks, G_BLOCK_SIZE >> > (generation_size, dev_generation_idx, dev_fitness_function);
 	cuda_check_terminate(cudaDeviceSynchronize());
 
@@ -98,26 +114,38 @@ void algorithms::genetic::genetic_method::first_generation()
 }
 
 // idx is an index in dev_generation_idx
-__global__ void kernel_crossover_and_mutate(vector3* dev_chromosomes, int N, int child_idx, int parent_idx1, int parent_idx2, int crossover_point, int* dev_generation_idx,
+__global__ void kernel_crossover_and_mutate(vector3* dev_chromosomes, int N, int child_idx, int first_parent_idx, int second_parent_idx, int crossover_point, int* dev_generation_idx,
 	int generation_size, float mutation_ratio, curandState* dev_states)
 {
 	int tid = threadIdx.x + blockDim.x * blockIdx.x;
-	if (tid < N) 
+	if (tid < N && child_idx < 2 * generation_size && first_parent_idx < 2 * generation_size && second_parent_idx < 2 * generation_size) 
 	{
-		dev_chromosomes[dev_generation_idx[child_idx]] =
-			dev_chromosomes[dev_generation_idx[tid < crossover_point ? parent_idx1 : parent_idx2]];
+		dev_chromosomes[tid + dev_generation_idx[child_idx] * N] =
+			dev_chromosomes[tid + dev_generation_idx[tid < crossover_point ? first_parent_idx : second_parent_idx] * N];
 
+		// mutation
 		if (curand_uniform(&dev_states[tid]) <= mutation_ratio)
 		{
-
+			algorithms::randomization::generate_random_unit_vector(&dev_chromosomes[tid + dev_generation_idx[child_idx] * N], &dev_states[tid]);
 		}
-
 	}
 }
 
 void algorithms::genetic::genetic_method::next_generation()
 {
-	
+	for (int i = generation_size; i < 2 * generation_size - 1; i++)
+	{
+		int first_parent_idx = first_parent_distribution(generator);
+		int second_parent_idx= second_parent_distribution(generator);
+		if (second_parent_idx >= first_parent_idx)
+		{
+			second_parent_idx++;
+		}
+		int crossover_point = crossover_point_distribution(generator);
+		kernel_crossover_and_mutate << <number_of_blocks, G_BLOCK_SIZE >> > (dev_chromosomes, N, i, first_parent_idx, second_parent_idx,
+			crossover_point, dev_generation_idx, generation_size, mutation_ratio, dev_states);
+		cuda_check_terminate(cudaDeviceSynchronize());
+	}
 
 
 }
