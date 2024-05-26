@@ -9,6 +9,48 @@
 
 #include <iostream>
 
+enum class datatype 
+{
+	integer,
+	vector3
+};
+
+void print_device_array(void* dev_ptr, int n, datatype type)
+{
+	void* host_ptr;
+	size_t size;
+	switch (type)
+	{
+	case datatype::integer:
+		host_ptr = new int[n];
+		size = n * sizeof(int);
+		break;
+	case datatype::vector3:
+		host_ptr = new vector3[n];
+		size = n * sizeof(vector3);
+		break;
+	}
+	if (!host_ptr || 
+		!cuda_check_continue(cudaMemcpy(host_ptr, dev_ptr, size, cudaMemcpyDeviceToHost))) 
+	{ return; }
+
+	for (int i = 0; i < n; i++)
+	{
+		switch (type)
+		{
+		case datatype::integer:
+			std::cout << ((int*)host_ptr)[i] << std::endl;
+			break;
+		case datatype::vector3:
+			vector3& vec = ((vector3*)host_ptr)[i];
+			std::cout << vec.x << ", " << vec.y << ", " << vec.z << std::endl;
+			break;
+		}
+	}
+	std::cout << std::endl;
+	delete[] host_ptr;
+}
+
 bool algorithms::genetic::genetic_method::init(parameters* params)
 {
 	N = params->N;
@@ -33,9 +75,9 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 	}
 
 	cuda_allocate((void**)&dev_generation_idx, 2 * params->generation_size * sizeof(int), &allocation_failure);
-	cuda_allocate((void**)&dev_fitness, 2 * params->generation_size * sizeof(int), &allocation_failure);
+	cuda_allocate((void**)&dev_fitness,	2 * params->generation_size * sizeof(int), &allocation_failure);
 	cuda_allocate((void**)&dev_chromosomes, 2 * params->N * params->generation_size * sizeof(vector3), &allocation_failure);
-	cuda_allocate((void**)&dev_random_walk, N * sizeof(vector3), &allocation_failure);
+	cuda_allocate((void**)&dev_random_walk, params->N * sizeof(vector3), &allocation_failure);
 	cuda_allocate((void**)&dev_states, params->N * sizeof(curandState), &allocation_failure);
 	cuda_allocate((void**)&dev_invalid_distances, params->N * sizeof(int), &allocation_failure);
 
@@ -83,10 +125,10 @@ bool algorithms::genetic::genetic_method::run(vector3** particles, void* params)
 		while (solution_idx < 0) 
 		{
 			next_generation();
-			compute_fitness_function();
-			solution_idx = select_population();
+			compute_fitness_function(); 
+			solution_idx = select_population(); 
 			std::cout << ++iteration << std::endl;
-		}
+ 		}
 		copy_solution(particles, solution_idx);
 		terminate();
 		return true;
@@ -122,6 +164,7 @@ void algorithms::genetic::genetic_method::first_generation()
 	{	
 		fitness_function(i, i);
 	}
+	cuda_check_terminate(cudaMemcpy(dev_fitness, fitness, generation_size * sizeof(int), cudaMemcpyHostToDevice));
 }
 
 // idx is an index in dev_generation_idx
@@ -144,10 +187,10 @@ __global__ void kernel_crossover_and_mutate(vector3* dev_chromosomes, int N, int
 
 void algorithms::genetic::genetic_method::next_generation()
 {
-	for (int i = generation_size; i < 2 * generation_size - 1; i++)
+	for (int i = generation_size; i < 2 * generation_size; i++)
 	{
 		int first_parent_idx = first_parent_distribution(generator);
-		int second_parent_idx= second_parent_distribution(generator);
+		int second_parent_idx = second_parent_distribution(generator);
 		if (second_parent_idx >= first_parent_idx)
 		{
 			second_parent_idx++;
@@ -166,6 +209,7 @@ void algorithms::genetic::genetic_method::compute_fitness_function()
 	{
 		fitness_function(i, new_generation_idx[i]);
 	}
+	cuda_check_terminate(cudaMemcpy(dev_fitness + generation_size, fitness, generation_size * sizeof(int), cudaMemcpyHostToDevice));
 }
 
 // TODO: abstract the kernel due to its dual usage
@@ -214,12 +258,13 @@ void algorithms::genetic::genetic_method::fitness_function(int fitness_idx, int 
 
 int algorithms::genetic::genetic_method::select_population()
 {
- 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_fitness_ptr, dev_fitness_ptr + N, thrust::make_zip_iterator(thrust::make_tuple(dev_fitness_ptr, dev_generation_idx_ptr))));
+ 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_fitness_ptr, dev_fitness_ptr + 2 * generation_size, dev_generation_idx_ptr));
 
 	int best_fitness_function;
 	cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost);
 	if (best_fitness_function > 0)
 	{
+		std::cout << best_fitness_function << std::endl;
 		return -1;
 	}
 	int best_idx;
@@ -249,4 +294,24 @@ void algorithms::genetic::genetic_method::terminate()
 	{
 		delete[] new_generation_idx;
 	}
+}
+
+void algorithms::genetic::genetic_method::print_state()
+{	
+	static int i = 0;
+	std::cout << "State " << i++ << std::endl;
+
+	for (int i = 0; i < 2 * generation_size; i++)
+	{
+		std::cout << "Chromosome " << i << std::endl;
+		print_device_array(dev_chromosomes + i * N, N, datatype::vector3);
+	}
+	std::cout << "Fitness function" << std::endl;
+	print_device_array(dev_fitness, 2 * generation_size, datatype::integer);
+	std::cout << "Random walk" << std::endl;
+	print_device_array(dev_random_walk, N, datatype::vector3);
+	std::cout << "Generation idx" << std::endl;
+	print_device_array(dev_generation_idx, 2 * generation_size, datatype::integer);
+	std::cout << "Invalid array" << std::endl;
+	print_device_array(dev_invalid_distances, N, datatype::integer);
 }

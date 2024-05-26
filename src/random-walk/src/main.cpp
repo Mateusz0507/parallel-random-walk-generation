@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 	algorithms::genetic::genetic_method::parameters params;
 	params.N = 100;
 	params.mutation_ratio = 0.05;
-	params.generation_size = 2;
+	params.generation_size = 10;
 
 	vector3* result = new vector3[params.N];
 
@@ -41,9 +41,9 @@ int main(int argc, char** argv)
 		normalization_parameters.N = p.N;
 
 		method.run(&result, &normalization_parameters);
-	}
+	}*/
 
 	if (create_pdb_file(result, p.N, "walk"))
 		open_chimera("walk");
-	delete[] result;*/
+	delete[] result;
 }
