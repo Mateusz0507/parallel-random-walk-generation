@@ -46,7 +46,7 @@ bool algorithms::directional_randomization::generate_starting_points(
     // eventually thrust does not implement operator+ for float3 or double3
     thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
     thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
-    add_particles add;
+    add_vector3 add;
     cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
 
     if (dev_states)

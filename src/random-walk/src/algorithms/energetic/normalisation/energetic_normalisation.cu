@@ -50,13 +50,11 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 	cuda_check_terminate(cudaDeviceSynchronize());
 
 	// determining points
-	vector3 init = { 0.0, 0.0, 0.0 };
-
 	// thrust no operator matches error resolved here https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
 	// eventually thrust does not implement operator+ for float3 or double3
 	thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
 	thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
-	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init_point, add));
 	
 	{
 		vector3* start = new vector3[N];
@@ -79,7 +77,7 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 		cuda_check_terminate(cudaDeviceSynchronize());
 
 		// determining new particles
-		cuda_check_errors_status_terminate(thrust::exclusive_scan<thrust::device_ptr<vector3>>(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+		cuda_check_errors_status_terminate(thrust::exclusive_scan<thrust::device_ptr<vector3>>(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init_point, add));
 		
 		std::cout << iterations << std::endl;
 	} while (!validator.validate(dev_points, N, DISTANCE, EN_PRECISION) && (iterations++ < max_iterations || max_iterations < 0));

@@ -46,7 +46,9 @@ namespace algorithms
 			vector3* dev_unit_vectors = nullptr;
 			vector3* dev_points = nullptr;
 			curandState* dev_states = nullptr;
-			model::add_particles add = model::add_particles();
+
+			model::add_vector3 add;
+			vector3 init_point = { 0.0, 0.0, 0.0 };
 
 			bool main_loop(int N, int max_iterations);
 			bool allocate_memory(int N);

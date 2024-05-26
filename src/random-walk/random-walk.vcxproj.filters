@@ -36,7 +36,6 @@
     <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\algorithms\abstract_method.cpp" />
     <ClCompile Include="src\algorithms\validators\abstract_validator.cpp" />
-    <ClCompile Include="src\parametrization\program_parametrization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\algorithms\model\particle.cu" />
@@ -53,5 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

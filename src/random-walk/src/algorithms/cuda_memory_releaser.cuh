@@ -15,7 +15,7 @@ private:
 
 	std::set<void*> cuda_pointers;
 
-	cuda_memory_releaser();
+	cuda_memory_releaser() = default;
 	~cuda_memory_releaser();
 
 	

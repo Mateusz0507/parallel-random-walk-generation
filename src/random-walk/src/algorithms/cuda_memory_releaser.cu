@@ -12,7 +12,7 @@ cuda_memory_releaser& cuda_memory_releaser::get()
 
 bool cuda_memory_releaser::log(void* dev_ptr)
 {
-	auto& it = cuda_pointers.find(dev_ptr);
+	auto it = cuda_pointers.find(dev_ptr);
 	if (it == cuda_pointers.end())
 	{
 		cuda_pointers.insert(dev_ptr);
@@ -22,7 +22,7 @@ bool cuda_memory_releaser::log(void* dev_ptr)
 
 bool cuda_memory_releaser::unregister(void* dev_ptr)
 {
-	auto& it = cuda_pointers.find(dev_ptr);
+	auto it = cuda_pointers.find(dev_ptr);
 	if(it != cuda_pointers.end())
 	{
 		cuda_pointers.erase(dev_ptr);

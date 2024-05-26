@@ -3,7 +3,7 @@
 #include "algorithms/abstract_method.h"
 #include "algorithms/model/particle.cuh"
 #include "algorithms/validators/abstract_validator.h"
-#include "algorithms/model/directional_randomization.cu"
+#include "algorithms/model/randomization.cuh"
 
 #define G_PRECISSION std::numeric_limits<real_t>::epsilon()
 #define G_DEFAULT_MUTATION_RATIO 0.05f
@@ -49,6 +49,9 @@ namespace algorithms
 			int* dev_invalid_distances;
 
 			curandState* dev_states = nullptr;
+
+			vector3 init_point = { 0.0, 0.0, 0.0 };
+			model::add_vector3 add;
 
 			bool init(parameters* parameters);
 			void first_generation();

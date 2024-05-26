@@ -16,7 +16,7 @@ __global__ void algorithms::randomization::kernel_generate_random_unit_vectors(v
 	}
 }
 
-void algorithms::randomization::generate_random_unit_vector(vector3* dev_dst_unit_vector, curandState* dev_state)
+__device__  void algorithms::randomization::generate_random_unit_vector(vector3* dev_dst_unit_vector, curandState* dev_state)
 {
 	real_t alpha = acos(2 * cuda_rand_uniform(dev_state) - 1.0);
 	real_t beta = cuda_rand_uniform(dev_state) * 2 * PI;

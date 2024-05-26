@@ -7,7 +7,6 @@
 #include "thrust/iterator/zip_iterator.h"
 
 #include "algorithms/genetic/genetic.cuh"
-#include "algorithms/model/randomization.cuh"
 #include "algorithms/model/particle.cuh"
 
 bool algorithms::genetic::genetic_method::init(parameters* params)
@@ -16,7 +15,7 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 	generation_size = params->generation_size;
 	mutation_ratio = params->mutation_ratio;
 	number_of_blocks = (N + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
-	generation_number_of_blocks = (generation_size + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
+	generation_number_of_blocks = (2 * generation_size + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
 	
 	bool allocation_failure = false;
 
@@ -37,6 +36,7 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 	cuda_allocate((void**)&dev_chromosomes, 2 * params->N * params->generation_size * sizeof(vector3), &allocation_failure);
 	cuda_allocate((void**)&dev_random_walk, N * sizeof(vector3), &allocation_failure);
 	cuda_allocate((void**)&dev_states, params->N * sizeof(curandState), &allocation_failure);
+	cuda_allocate((void**)&dev_invalid_distances, params->N * sizeof(int), &allocation_failure);
 
 	if (!allocation_failure)
 	{
@@ -98,12 +98,12 @@ void algorithms::genetic::genetic_method::first_generation()
 	// generating random walks
 	for (int i = 0; i < generation_size; i++)
 	{
-		algorithms::randomization::kernel_generate_random_unit_vectors<<<number_of_blocks, G_BLOCK_SIZE>>>(dev_unit_vectors + i * N, dev_states, N);
+		algorithms::randomization::kernel_generate_random_unit_vectors<<<number_of_blocks, G_BLOCK_SIZE>>>(dev_chromosomes + i * N, dev_states, N);
 		cuda_check_terminate(cudaDeviceSynchronize());
 	}
 
 	// initializing idx and fitness function arrays
-	kernel_init_tables << <generation_number_of_blocks, G_BLOCK_SIZE >> > (generation_size, dev_generation_idx, dev_fitness_function);
+	kernel_init_tables << <generation_number_of_blocks, G_BLOCK_SIZE >> > (generation_size, dev_generation_idx, dev_fitness);
 	cuda_check_terminate(cudaDeviceSynchronize());
 
 	// computing fitness function	
@@ -146,8 +146,6 @@ void algorithms::genetic::genetic_method::next_generation()
 			crossover_point, dev_generation_idx, generation_size, mutation_ratio, dev_states);
 		cuda_check_terminate(cudaDeviceSynchronize());
 	}
-
-
 }
 
 void algorithms::genetic::genetic_method::compute_fitness_function()
@@ -157,29 +155,6 @@ void algorithms::genetic::genetic_method::compute_fitness_function()
 	{
 		fitness_function(i, new_generation_idx[i]);
 	}
-}
-
-void algorithms::genetic::genetic_method::fitness_function(int fitness_idx, int chromosome_idx)
-{
-	thrust::exclusive_scan(dev_chromosomes + chromosome_idx * N, dev_chromosomes + (chromosome_idx + 1) * N, dev_random_walk);
-	kernel_fitness_function << <number_of_blocks, G_BLOCK_SIZE >> > (dev_random_walk, N, DISTANCE, G_PRECISSION, dev_invalid_distances);
-	cuda_check_terminate(cudaDeviceSynchronize());
-	cuda_check_errors_status_terminate(fitness[fitness_idx] = thrust::reduce(dev_invalid_distances, dev_invalid_distances + N));
-}
-
-int algorithms::genetic::genetic_method::select_population()
-{
- 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_fitness, dev_fitness + N, thrust::make_zip_iterator(thrust::make_tuple(dev_fitness, dev_generation_idx))));
-
-	int best_fitness_function;
-	cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost);
-	if (best_fitness_function > 0)
-	{
-		return -1;
-	}
-	int best_idx;
-	cudaMemcpy(&best_idx, dev_generation_idx, sizeof(int), cudaMemcpyDeviceToHost);
-	return best_idx;
 }
 
 // TODO: abstract the kernel due to its dual usage
@@ -216,9 +191,32 @@ __global__ void kernel_fitness_function(const vector3* dev_data, int N, const re
 	}
 }
 
+void algorithms::genetic::genetic_method::fitness_function(int fitness_idx, int chromosome_idx)
+{
+	thrust::exclusive_scan(dev_chromosomes + chromosome_idx * N, dev_chromosomes + (chromosome_idx + 1) * N, dev_random_walk, init_point, add);
+	kernel_fitness_function << <number_of_blocks, G_BLOCK_SIZE >> > (dev_random_walk, N, DISTANCE, G_PRECISSION, dev_invalid_distances);
+	cuda_check_terminate(cudaDeviceSynchronize());
+	cuda_check_errors_status_terminate(fitness[fitness_idx] = thrust::reduce(dev_invalid_distances, dev_invalid_distances + N));
+}
+
+int algorithms::genetic::genetic_method::select_population()
+{
+ 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_fitness, dev_fitness + N, thrust::make_zip_iterator(thrust::make_tuple(dev_fitness, dev_generation_idx))));
+
+	int best_fitness_function;
+	cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost);
+	if (best_fitness_function > 0)
+	{
+		return -1;
+	}
+	int best_idx;
+	cudaMemcpy(&best_idx, dev_generation_idx, sizeof(int), cudaMemcpyDeviceToHost);
+	return best_idx;
+}
+
 void algorithms::genetic::genetic_method::copy_solution(vector3** particles, int idx)
 {
-	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes + idx * N, dev_chromosomes + (idx + 1) * N, dev_random_walk));
+	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes + idx * N, dev_chromosomes + (idx + 1) * N, dev_random_walk, init_point, add));
 	cuda_check_terminate(cudaMemcpy(*particles, dev_random_walk, N * sizeof(vector3), cudaMemcpyDeviceToHost));
 }
 

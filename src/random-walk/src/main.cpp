@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 	if (!read(argc, argv, p))
 		return 1;
 
-	auto validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
+	auto validator = algorithms::validators::single_check_validator::single_check_validator();
 	vector3* result = new vector3[p.N];
 
 	if (std::string(p.method) == "naive")
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 		method.run(&result, &normalization_parameters);
 	}
 
-	if (create_pdb_file(result, p.N, "walk"));
+	if (create_pdb_file(result, p.N, "walk"))
 		open_chimera("walk");
 	delete[] result;
 }

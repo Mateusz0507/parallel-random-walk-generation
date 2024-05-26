@@ -15,7 +15,7 @@ __host__ __device__ real_t algorithms::model::norm(const vector3& a)
 	return sqrt((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
 }
 
-__host__ __device__ vector3 algorithms::model::add_particles::operator()(const vector3 &a, const vector3 &b) const
+__host__ __device__ vector3 algorithms::model::add_vector3::operator()(const vector3 &a, const vector3 &b) const
 {
 	vector3 c = a;
 	c.x += b.x;
