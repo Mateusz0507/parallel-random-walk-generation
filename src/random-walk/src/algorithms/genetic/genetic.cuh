@@ -5,6 +5,9 @@
 #include "algorithms/validators/abstract_validator.h"
 #include "algorithms/model/randomization.cuh"
 
+#include <random>
+#include <vector>
+
 #define G_PRECISSION std::numeric_limits<real_t>::epsilon()
 #define G_DEFAULT_MUTATION_RATIO 0.05f
 
@@ -47,6 +50,12 @@ namespace algorithms
 			int* dev_generation_idx = nullptr;
 			int* dev_fitness = nullptr;
 			int* dev_invalid_distances;
+
+			thrust::device_ptr<vector3> dev_random_walk_ptr;
+			std::vector<thrust::device_ptr<vector3>> dev_chromosomes_ptrs;
+			thrust::device_ptr<int> dev_generation_idx_ptr;
+			thrust::device_ptr<int> dev_fitness_ptr;
+			thrust::device_ptr<int> dev_invalid_distances_ptr;
 
 			curandState* dev_states = nullptr;
 

@@ -1,5 +1,3 @@
-#include <random>
-
 #include "thrust/scan.h"
 #include "thrust/reduce.h"
 #include "thrust/device_ptr.h"
@@ -8,6 +6,8 @@
 
 #include "algorithms/genetic/genetic.cuh"
 #include "algorithms/model/particle.cuh"
+
+#include <iostream>
 
 bool algorithms::genetic::genetic_method::init(parameters* params)
 {
@@ -25,6 +25,7 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 		allocation_failure = true;
 		fitness = nullptr;
 	}
+	new_generation_idx = new int[generation_size];
 	if(!allocation_failure && !new_generation_idx)
 	{
 		allocation_failure = true;
@@ -48,9 +49,17 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 		first_parent_distribution = std::uniform_int_distribution<>(0, generation_size - 1);
 		second_parent_distribution = std::uniform_int_distribution<>(0, generation_size - 1 >= 0 ? generation_size - 1 : 0);
 		crossover_point_distribution = std::uniform_int_distribution<>(0, N);
-	}
 
-	if (allocation_failure)
+		dev_random_walk_ptr = thrust::device_ptr<vector3>(dev_random_walk);
+		for (int i = 0; i < 2 * generation_size; i++)
+		{
+			dev_chromosomes_ptrs.push_back(thrust::device_ptr<vector3>(dev_chromosomes + i * N));
+		}
+		dev_generation_idx_ptr = thrust::device_ptr<int>(dev_generation_idx);
+		dev_fitness_ptr = thrust::device_ptr<int>(dev_fitness);
+		dev_invalid_distances_ptr = thrust::device_ptr<int>(dev_invalid_distances);
+	}
+	else
 	{
 		terminate();
 	}
@@ -68,6 +77,7 @@ bool algorithms::genetic::genetic_method::run(vector3** particles, void* params)
 {
 	if (init((parameters*)params))
 	{
+		int iteration = 0;
 		first_generation();
 		int solution_idx = -1;
 		while (solution_idx < 0) 
@@ -75,6 +85,7 @@ bool algorithms::genetic::genetic_method::run(vector3** particles, void* params)
 			next_generation();
 			compute_fitness_function();
 			solution_idx = select_population();
+			std::cout << ++iteration << std::endl;
 		}
 		copy_solution(particles, solution_idx);
 		terminate();
@@ -193,15 +204,17 @@ __global__ void kernel_fitness_function(const vector3* dev_data, int N, const re
 
 void algorithms::genetic::genetic_method::fitness_function(int fitness_idx, int chromosome_idx)
 {
-	thrust::exclusive_scan(dev_chromosomes + chromosome_idx * N, dev_chromosomes + (chromosome_idx + 1) * N, dev_random_walk, init_point, add);
+ 	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes_ptrs[chromosome_idx], dev_chromosomes_ptrs[chromosome_idx] + N, dev_random_walk_ptr, init_point, add));
+
 	kernel_fitness_function << <number_of_blocks, G_BLOCK_SIZE >> > (dev_random_walk, N, DISTANCE, G_PRECISSION, dev_invalid_distances);
 	cuda_check_terminate(cudaDeviceSynchronize());
-	cuda_check_errors_status_terminate(fitness[fitness_idx] = thrust::reduce(dev_invalid_distances, dev_invalid_distances + N));
+
+	cuda_check_errors_status_terminate(fitness[fitness_idx] = thrust::reduce(dev_invalid_distances_ptr, dev_invalid_distances_ptr + N));
 }
 
 int algorithms::genetic::genetic_method::select_population()
 {
- 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_fitness, dev_fitness + N, thrust::make_zip_iterator(thrust::make_tuple(dev_fitness, dev_generation_idx))));
+ 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_fitness_ptr, dev_fitness_ptr + N, thrust::make_zip_iterator(thrust::make_tuple(dev_fitness_ptr, dev_generation_idx_ptr))));
 
 	int best_fitness_function;
 	cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost);
@@ -216,7 +229,7 @@ int algorithms::genetic::genetic_method::select_population()
 
 void algorithms::genetic::genetic_method::copy_solution(vector3** particles, int idx)
 {
-	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes + idx * N, dev_chromosomes + (idx + 1) * N, dev_random_walk, init_point, add));
+	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes_ptrs[idx], dev_chromosomes_ptrs[idx] + N, dev_random_walk, init_point, add));
 	cuda_check_terminate(cudaMemcpy(*particles, dev_random_walk, N * sizeof(vector3), cudaMemcpyDeviceToHost));
 }
 

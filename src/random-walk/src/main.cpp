@@ -6,7 +6,17 @@ int main(int argc, char** argv)
 {
 	parameters p;
 
-	if (!read(argc, argv, p))
+	algorithms::genetic::genetic_method::parameters params;
+	params.N = 100;
+	params.mutation_ratio = 0.05;
+	params.generation_size = 2;
+
+	vector3* result = new vector3[params.N];
+
+	algorithms::genetic::genetic_method method;
+	method.run(&result, &params);
+
+	/*if (!read(argc, argv, p))
 		return 1;
 
 	auto validator = algorithms::validators::single_check_validator::single_check_validator();
@@ -35,5 +45,5 @@ int main(int argc, char** argv)
 
 	if (create_pdb_file(result, p.N, "walk"))
 		open_chimera("walk");
-	delete[] result;
+	delete[] result;*/
 }

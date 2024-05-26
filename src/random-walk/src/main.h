@@ -19,6 +19,7 @@
 #include "algorithms/model/particle.cuh"
 #include "algorithms/energetic/energetic.h"
 #include "algorithms/validators/single_check_validator.cuh"
+#include "algorithms/genetic/genetic.cuh"
 
 using namespace std;
 using namespace program_parametrization;
