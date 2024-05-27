@@ -13,6 +13,9 @@ namespace program_parametrization
 		int N = 100;
 		int directional_level = 0;
 		int segments_number = 1;
+
+		float mutation_ratio = 0.05;
+		int generation_size = 10;
 	};
 
 	void print_usage(const char* name);

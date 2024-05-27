@@ -34,14 +34,13 @@ int main(int argc, char** argv)
 	}
 	else if (std::string(p.method) == "genetic")
 	{
-		algorithms::genetic::genetic_method::parameters genetic_parameters;
-		genetic_parameters.N = 100;
-		genetic_parameters.mutation_ratio = 0.05;
-		genetic_parameters.generation_size = 10;
-
-		result = new vector3[genetic_parameters.N];
-
 		algorithms::genetic::genetic_method method;
+
+		algorithms::genetic::genetic_method::parameters genetic_parameters;
+		genetic_parameters.N = p.N;
+		genetic_parameters.mutation_ratio = p.mutation_ratio;
+		genetic_parameters.generation_size = p.generation_size;
+
 		method.run(&result, &genetic_parameters);
 	}
 
