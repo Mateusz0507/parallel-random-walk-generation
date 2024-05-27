@@ -104,7 +104,8 @@ bool algorithms::energetic::naive_method::run(vector3** result, void* p_void)
 
         while (!validator.validate(dev_points, p->N, DISTANCE, EN_PRECISION))
         {
-            iteration<<<p->N /32 + 1, 32>>>(dev_points, p->N);
+            int number_of_blocks = (p->N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
+            iteration<<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_points, p->N);
         }
 
         if (!cuda_check_continue(cudaMemcpy(*result, dev_points, p->N * sizeof(vector3), cudaMemcpyDeviceToHost)))
