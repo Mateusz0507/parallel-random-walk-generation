@@ -64,7 +64,7 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 			std::cout << "Copied generated points" << std::endl;
 
 			create_pdb_file(start, N, "before");
-			// open_chimera("before");
+			open_chimera("before");
 			delete[] start;
 		}
 	}
