@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 		method.run(&result, &genetic_parameters);
 	}
 
-	if (create_pdb_file(result, p.N, "walk"))
-		open_chimera("walk");
+	if (create_pdb_file(result, p.N, AFTER_PDB_FILE_NAME))
+		open_chimera(AFTER_PDB_FILE_NAME);
 	delete[] result;
 }

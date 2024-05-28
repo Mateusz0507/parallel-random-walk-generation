@@ -63,8 +63,8 @@ bool algorithms::energetic::normalisation_method::main_loop(int N, int max_itera
 			cuda_check_terminate(cudaMemcpy(start, dev_points, sizeof(vector3) * N, cudaMemcpyDeviceToHost));
 			std::cout << "Copied generated points" << std::endl;
 
-			create_pdb_file(start, N, "before");
-			// open_chimera("before");
+			create_pdb_file(start, N, BEFORE_PDB_FILE_NAME);
+			open_chimera(BEFORE_PDB_FILE_NAME);
 			delete[] start;
 		}
 	}
