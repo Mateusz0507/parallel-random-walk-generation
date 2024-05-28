@@ -98,8 +98,8 @@ bool algorithms::energetic::naive_method::run(vector3** result, void* p_void)
             release_memory();
             return false;
         }
-        create_pdb_file(points_before_algorithm, p->N, "before");
-        open_chimera("before");
+        create_pdb_file(points_before_algorithm, p->N, BEFORE_PDB_FILE_NAME);
+        open_chimera(BEFORE_PDB_FILE_NAME);
 
 
         while (!validator.validate(dev_points, p->N, DISTANCE, EN_PRECISION))
