@@ -28,6 +28,7 @@
     <ClInclude Include="src\algorithms\validators\single_check_validator.cuh" />
     <ClInclude Include="src\algorithms\genetic\genetic.cuh" />
     <ClInclude Include="src\parametrization\names.h" />
+    <ClInclude Include="src\tests\tests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
@@ -36,6 +37,7 @@
     <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\algorithms\abstract_method.cpp" />
     <ClCompile Include="src\algorithms\validators\abstract_validator.cpp" />
+    <ClCompile Include="src\tests\tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\algorithms\model\particle.cu" />

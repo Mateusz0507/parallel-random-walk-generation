@@ -1,5 +1,4 @@
 #include "main.h"
-#include "chimera/chimera.h"
 
 
 int main(int argc, char** argv)
@@ -11,6 +10,8 @@ int main(int argc, char** argv)
 
 	auto validator = algorithms::validators::single_check_validator::single_check_validator();
 	vector3* result = new vector3[p.N];
+
+	std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 
 	if (std::string(p.method) == "naive")
 	{
@@ -44,7 +45,13 @@ int main(int argc, char** argv)
 		method.run(&result, &genetic_parameters);
 	}
 
+	std::chrono::steady_clock::time_point end_time = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
 	if (create_pdb_file(result, p.N, AFTER_PDB_FILE_NAME))
 		open_chimera(AFTER_PDB_FILE_NAME);
+
+	add_test_to_csv(p, duration.count());
+
 	delete[] result;
 }
