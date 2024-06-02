@@ -7,7 +7,8 @@ bool algorithms::directional_randomization::generate_starting_positions(
     vector3* dev_points_argument,
     const int N,
     const int directional_parametr,
-    const int number_of_segments)
+    const int number_of_segments,
+    const int seed)
 {
     /* Case when number of segments is too small */
     if (number_of_segments < 1)
@@ -27,7 +28,7 @@ bool algorithms::directional_randomization::generate_starting_positions(
         return false;
     }
 
-    algorithms::directional_randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, N, std::time(nullptr), 0);
+    algorithms::directional_randomization::kernel_setup <<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_states, N, seed);
     cuda_check_terminate(cudaDeviceSynchronize());
 
     vector3* dev_points = nullptr;
@@ -53,19 +54,23 @@ bool algorithms::directional_randomization::generate_starting_positions(
 
 
     kernel_generate_segments_directions <<<number_of_blocks, EN_BLOCK_SIZE>>>
-        (dev_segments_directions_matrices, dev_states, number_of_segments, 0);
+        (dev_segments_directions_matrices, dev_states, number_of_segments, seed);
     
     kernel_generate_random_unit_vectors <<<number_of_blocks, EN_BLOCK_SIZE>>>
         (dev_unit_vectors, dev_states, dev_segments_directions_matrices, number_of_segments, N, directional_parametr);
 
 
-    // thrust no operator matches error resolved here https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
-    // eventually thrust does not implement operator+ for float3 or double3
+    /*
+    * thrust no operator matches error resolved here:
+    * https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
+    * eventually thrust does not implement operator+ for float3 or double3
+    */
     thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
     thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
     add_vector3 add;
     vector3 init = { 0.0, 0.0, 0.0 };
-    cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+    cuda_check_errors_status_terminate(thrust::exclusive_scan(
+        dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
 
 
     cudaMemcpy(dev_unit_vectors_argument, dev_unit_vectors, N * sizeof(vector3), cudaMemcpyDeviceToDevice);
@@ -99,7 +104,16 @@ bool algorithms::directional_randomization::generate_starting_positions(
     return true;
 }
 
-__global__ void algorithms::directional_randomization::kernel_generate_segments_directions(matrix* dev_segments_directions_matrices, curandState* dev_states, int number_of_segments, uint64_t seed)
+__global__ void algorithms::directional_randomization::kernel_setup(
+    curandState* dev_states, int N, uint64_t seed, uint64_t offset)
+{
+    int index = threadIdx.x + blockIdx.x * blockDim.x;
+    if (index < N)
+        curand_init(seed, index, offset, &dev_states[index]);
+}
+
+__global__ void algorithms::directional_randomization::kernel_generate_segments_directions(
+    matrix* dev_segments_directions_matrices, curandState* dev_states, int number_of_segments, uint64_t seed)
 {
     /*
     * Generation of starting points can be directed towards [1, 0, 0] direction.
@@ -116,13 +130,13 @@ __global__ void algorithms::directional_randomization::kernel_generate_segments_
     }
 }
 
-__global__ void algorithms::directional_randomization::kernel_setup(curandState* dev_states, int N, uint64_t seed = 0, uint64_t offset = 0)
-{
-	int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	if (tid < N) curand_init(seed, tid, offset, &dev_states[tid]);
-}
-
-__global__ void algorithms::directional_randomization::kernel_generate_random_unit_vectors(vector3* dev_unit_vectors, curandState* dev_states, matrix* dev_segments_directions_matrices, int number_of_segments, int N, int k)
+__global__ void algorithms::directional_randomization::kernel_generate_random_unit_vectors(
+    vector3* dev_unit_vectors,
+    curandState* dev_states,
+    matrix* dev_segments_directions_matrices,
+    int number_of_segments,
+    int N,
+    int k)
 {
 	/*
     * Article that describes uniform distribution on a sphere:
