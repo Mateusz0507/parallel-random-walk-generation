@@ -2,16 +2,23 @@
 #include "algorithms/model/directional_randomization.cuh"
 
 
-bool algorithms::directional_randomization::generate_starting_points(
-    vector3* dev_points, const int N, const int directional_parametr, const int number_of_segments)
+bool algorithms::directional_randomization::generate_starting_positions(
+    vector3* dev_unit_vectors_argument,
+    vector3* dev_points_argument,
+    const int N,
+    const int directional_parametr,
+    const int number_of_segments)
 {
-    if (directional_parametr > 0 && N < number_of_segments)
-        return false;
-
+    /* Case when number of segments is too small */
     if (number_of_segments < 1)
         return false;
 
+    /* Case when number of segments is too big */
+    if (directional_parametr > 0 && N < number_of_segments)
+        return false;
+
     int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
+
 
     curandState* dev_states = nullptr;
     if (!cuda_check_continue(cudaMalloc(&dev_states, N * sizeof(curandState))))
@@ -22,6 +29,13 @@ bool algorithms::directional_randomization::generate_starting_points(
 
     algorithms::directional_randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, N, std::time(nullptr), 0);
     cuda_check_terminate(cudaDeviceSynchronize());
+
+    vector3* dev_points = nullptr;
+    if (!cuda_check_continue(cudaMalloc(&dev_points, N * sizeof(vector3))))
+    {
+        dev_points = nullptr;
+        return false;
+    }
 
     vector3* dev_unit_vectors = nullptr;
     if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, N * sizeof(vector3))))
@@ -37,22 +51,37 @@ bool algorithms::directional_randomization::generate_starting_points(
         return false;
     }
 
-    kernel_generate_segments_directions << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_segments_directions_matrices, dev_states, number_of_segments, 0);
+
+    kernel_generate_segments_directions <<<number_of_blocks, EN_BLOCK_SIZE>>>
+        (dev_segments_directions_matrices, dev_states, number_of_segments, 0);
     
-    kernel_generate_random_unit_vectors << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_unit_vectors, dev_states, dev_segments_directions_matrices, number_of_segments, N, directional_parametr);
-    vector3 init = { 0.0, 0.0, 0.0 };
+    kernel_generate_random_unit_vectors <<<number_of_blocks, EN_BLOCK_SIZE>>>
+        (dev_unit_vectors, dev_states, dev_segments_directions_matrices, number_of_segments, N, directional_parametr);
+
 
     // thrust no operator matches error resolved here https://stackoverflow.com/questions/18123407/cuda-thrust-reduction-with-double2-arrays
     // eventually thrust does not implement operator+ for float3 or double3
     thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
     thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
     add_vector3 add;
+    vector3 init = { 0.0, 0.0, 0.0 };
     cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+
+
+    cudaMemcpy(dev_unit_vectors_argument, dev_unit_vectors, N * sizeof(vector3), cudaMemcpyDeviceToDevice);
+    cudaMemcpy(dev_points_argument, dev_points, N * sizeof(vector3), cudaMemcpyDeviceToDevice);
+
 
     if (dev_states)
     {
         cuda_check_terminate(cudaFree(dev_states));
         dev_states = nullptr;
+    }
+
+    if (dev_points)
+    {
+        cuda_check_terminate(cudaFree(dev_points));
+        dev_points = nullptr;
     }
 
     if (dev_unit_vectors)

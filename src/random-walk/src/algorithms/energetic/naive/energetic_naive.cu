@@ -87,7 +87,8 @@ bool algorithms::energetic::naive_method::run(vector3** result, void* p_void)
 
     if (allocate_memory(p->N))
     {
-        if (!algorithms::directional_randomization::generate_starting_points(dev_points, p->N, p->directional_level, p->segments_number))
+        if (!algorithms::directional_randomization::generate_starting_positions(
+                nullptr, dev_points, p->N, p->directional_level, p->segments_number))
             return false;
 
 
