@@ -15,20 +15,20 @@ bool algorithms::directional_randomization::generate_starting_positions(
         return false;
 
     /* Case when number of segments is too big */
-    if (directional_parametr > 0 && N < number_of_segments)
+    if (directional_parametr > 0 && N - 1 < number_of_segments)
         return false;
 
     int number_of_blocks = (N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
 
 
     curandState* dev_states = nullptr;
-    if (!cuda_check_continue(cudaMalloc(&dev_states, N * sizeof(curandState))))
+    if (!cuda_check_continue(cudaMalloc(&dev_states, (N - 1) * sizeof(curandState))))
     {
         dev_states = nullptr;
         return false;
     }
 
-    algorithms::directional_randomization::kernel_setup <<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_states, N, seed);
+    algorithms::directional_randomization::kernel_setup <<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_states, N - 1, seed);
     cuda_check_terminate(cudaDeviceSynchronize());
 
     vector3* dev_points = nullptr;
@@ -39,7 +39,7 @@ bool algorithms::directional_randomization::generate_starting_positions(
     }
 
     vector3* dev_unit_vectors = nullptr;
-    if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, N * sizeof(vector3))))
+    if (!cuda_check_continue(cudaMalloc(&dev_unit_vectors, (N - 1) * sizeof(vector3))))
     {
         dev_unit_vectors = nullptr;
         return false;
@@ -57,7 +57,7 @@ bool algorithms::directional_randomization::generate_starting_positions(
         (dev_segments_directions_matrices, dev_states, number_of_segments, seed);
     
     kernel_generate_random_unit_vectors <<<number_of_blocks, EN_BLOCK_SIZE>>>
-        (dev_unit_vectors, dev_states, dev_segments_directions_matrices, number_of_segments, N, directional_parametr);
+        (dev_unit_vectors, dev_states, dev_segments_directions_matrices, number_of_segments, N - 1, directional_parametr);
 
 
     /*
@@ -68,12 +68,10 @@ bool algorithms::directional_randomization::generate_starting_positions(
     thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
     thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
     add_vector3 add;
-    vector3 init = { 0.0, 0.0, 0.0 };
-    cuda_check_errors_status_terminate(thrust::exclusive_scan(
-        dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr, init, add));
+    cuda_check_errors_status_terminate(thrust::inclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr + 1, add));
 
 
-    cudaMemcpy(dev_unit_vectors_argument, dev_unit_vectors, N * sizeof(vector3), cudaMemcpyDeviceToDevice);
+    cudaMemcpy(dev_unit_vectors_argument, dev_unit_vectors, (N - 1) * sizeof(vector3), cudaMemcpyDeviceToDevice);
     cudaMemcpy(dev_points_argument, dev_points, N * sizeof(vector3), cudaMemcpyDeviceToDevice);
 
 
@@ -105,10 +103,10 @@ bool algorithms::directional_randomization::generate_starting_positions(
 }
 
 __global__ void algorithms::directional_randomization::kernel_setup(
-    curandState* dev_states, int N, uint64_t seed, uint64_t offset)
+    curandState* dev_states, int n, uint64_t seed, uint64_t offset)
 {
     int index = threadIdx.x + blockIdx.x * blockDim.x;
-    if (index < N)
+    if (index < n)
         curand_init(seed, index, offset, &dev_states[index]);
 }
 
@@ -135,7 +133,7 @@ __global__ void algorithms::directional_randomization::kernel_generate_random_un
     curandState* dev_states,
     matrix* dev_segments_directions_matrices,
     int number_of_segments,
-    int N,
+    int n,
     int k)
 {
 	/*
@@ -144,7 +142,7 @@ __global__ void algorithms::directional_randomization::kernel_generate_random_un
 	*/
 
 	const int tid = threadIdx.x + blockIdx.x * blockDim.x;
-	if (tid < N)
+	if (tid < n)
 	{
 		/* alpha and beta are in [0, pi] */
 		real_t alpha = acos(2 * cuda_rand_uniform(&dev_states[tid]) - 1.0);
@@ -164,7 +162,7 @@ __global__ void algorithms::directional_randomization::kernel_generate_random_un
         v.y = sin(alpha) * sin(beta);
         v.z = cos(alpha);
 
-        int index_of_segment = (tid * number_of_segments) / N;
+        int index_of_segment = (tid * number_of_segments) / n;
         dev_unit_vectors[tid] = dev_segments_directions_matrices[index_of_segment].multiply(v);
 	}
 }
