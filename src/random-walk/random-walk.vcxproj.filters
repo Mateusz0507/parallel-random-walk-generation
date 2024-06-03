@@ -27,7 +27,6 @@
     <ClInclude Include="src\algorithms\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\validators\single_check_validator.cuh" />
     <ClInclude Include="src\algorithms\genetic\genetic.cuh" />
-    <ClInclude Include="src\parametrization\names.h" />
     <ClInclude Include="src\tests\tests.h" />
   </ItemGroup>
   <ItemGroup>
