@@ -1,7 +1,7 @@
 #include "common/common.cuh"
 #include "algorithms/abstract_method.h"
 #include "algorithms/model/particle.cuh"
-#include "algorithms/model/randomization.cuh"
+#include "algorithms/model/directional_randomization.cuh"
 #include "algorithms/validators/abstract_validator.h"
 #include "algorithms/constaces/math_constances.h"
 
@@ -20,12 +20,12 @@
 
 #define EN_BLOCK_SIZE 256
 
-#define _CONST_SEED
-// #define _TIME_SEED
+// #define _CONST_SEED
+#define _TIME_SEED
 
 #ifdef _CONST_SEED
 	#define SEED 0
-#elif define _TIME_SEED
+#elif defined(_TIME_SEED)
 	#define SEED std::time(nullptr)
 #endif 
 
@@ -45,10 +45,9 @@ namespace algorithms
 			validators::abstract_validator& validator;
 			vector3* dev_unit_vectors = nullptr;
 			vector3* dev_points = nullptr;
-			curandState* dev_states = nullptr;
 
 			model::add_vector3 add;
-			vector3 init_point = { 0.0, 0.0, 0.0 };
+			vector3 starting_point = { 0.0, 0.0, 0.0 };
 
 			bool main_loop(int N, int max_iterations);
 			bool allocate_memory(int N);
