@@ -41,6 +41,16 @@ namespace algorithms
 	{
 		class normalisation_method : public abstract_method
 		{
+		public:
+			struct parameters
+			{
+				int N;
+				int directional_level;
+				int segments_number;
+			};
+
+			normalisation_method(validators::abstract_validator& validator);
+			virtual bool run(vector3** result, void*) override;
 		private: 
 			validators::abstract_validator& validator;
 			vector3* dev_unit_vectors = nullptr;
@@ -49,17 +59,9 @@ namespace algorithms
 			model::add_vector3 add;
 			vector3 starting_point = { 0.0, 0.0, 0.0 };
 
-			bool main_loop(int N, int max_iterations);
+			bool main_loop(parameters* p, int max_iterations);
 			bool allocate_memory(int N);
 			void release_memory();
-		public:
-			struct parameters
-			{
-				int N;
-			};
-
-			normalisation_method(validators::abstract_validator& validator);
-			virtual bool run(vector3** result, void*) override;
 		};
 	}
 }

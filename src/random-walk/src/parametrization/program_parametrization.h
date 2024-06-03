@@ -9,7 +9,7 @@ namespace program_parametrization
 {
 	struct parameters
 	{
-		char* method = "normalization";
+		char* method = "naive";
 		int N = 100;
 		int directional_level = 0;
 		int segments_number = 1;

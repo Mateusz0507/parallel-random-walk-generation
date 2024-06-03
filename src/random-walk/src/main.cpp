@@ -30,6 +30,8 @@ int main(int argc, char** argv)
 
 		algorithms::energetic::normalisation_method::parameters normalization_parameters;
 		normalization_parameters.N = p.N;
+		normalization_parameters.directional_level = p.directional_level;
+		normalization_parameters.segments_number = p.segments_number;
 
 		method.run(&result, &normalization_parameters);
 	}
