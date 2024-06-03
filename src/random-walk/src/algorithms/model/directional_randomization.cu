@@ -68,7 +68,9 @@ bool algorithms::directional_randomization::generate_starting_positions(
     thrust::device_ptr<vector3> dev_unit_vectors_ptr = thrust::device_ptr<vector3>(dev_unit_vectors);
     thrust::device_ptr<vector3> dev_points_ptr = thrust::device_ptr<vector3>(dev_points);
     add_vector3 add;
-    cuda_check_errors_status_terminate(thrust::inclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + N, dev_points_ptr + 1, add));
+    vector3 starting_point = { 0.0, 0.0, 0.0 };
+    thrust::fill(dev_points_ptr, dev_points_ptr + 1, starting_point);
+    cuda_check_errors_status_terminate(thrust::inclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + (N - 1), dev_points_ptr + 1, add));
 
 
     cudaMemcpy(dev_unit_vectors_argument, dev_unit_vectors, (N - 1) * sizeof(vector3), cudaMemcpyDeviceToDevice);
