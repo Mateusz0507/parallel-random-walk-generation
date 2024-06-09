@@ -180,11 +180,7 @@ __global__ void kernel_improved_crossover_and_mutate(vector3* dev_chromosomes, i
 		if (tid == crossover_point || curand_uniform(&dev_states[tid]) <= mutation_ratio)
 		{
 			int i = 0;
-			while (i < 15)
-			{
-				algorithms::randomization::generate_random_unit_vector(&dev_chromosomes[tid + dev_generation_idx[child_idx] * N1], &dev_states[tid]);
-
-			}
+			algorithms::randomization::generate_random_unit_vector(&dev_chromosomes[tid + dev_generation_idx[child_idx] * N1], &dev_states[tid]);
 		}
 	}
 }
