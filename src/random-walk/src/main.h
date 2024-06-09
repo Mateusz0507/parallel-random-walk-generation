@@ -19,7 +19,8 @@
 #include "algorithms/model/particle.cuh"
 #include "algorithms/energetic/energetic.h"
 #include "algorithms/validators/single_check_validator.cuh"
-#include "algorithms/genetic/genetic.cuh"
+#include "algorithms/genetic/naive/genetic.cuh"
+#include "algorithms/genetic/improved/genetic_improved.cuh"
 #include "chimera/chimera.h"
 #include "tests/tests.h"
 

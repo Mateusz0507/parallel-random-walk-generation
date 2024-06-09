@@ -12,8 +12,17 @@ int main(int argc, char** argv)
 	vector3* result = new vector3[p.N];
 
 	std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+	
+	{
+		algorithms::genetic::genetic_improved_method::parameters params;
+		params.N = p.N = 500;
+		params.generation_size = p.generation_size = 40;
+		params.mutation_ratio = p.mutation_ratio = 0.04;
+		algorithms::genetic::genetic_method method;
+		method.run(&result, &params);
+	}
 
-	if (std::string(p.method) == "naive")
+	/*if (std::string(p.method) == "naive")
 	{
 		auto method = algorithms::energetic::naive_method::naive_method(validator);
 
@@ -45,7 +54,7 @@ int main(int argc, char** argv)
 		genetic_parameters.generation_size = p.generation_size;
 
 		method.run(&result, &genetic_parameters);
-	}
+	}*/
 
 	std::chrono::steady_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);

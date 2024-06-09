@@ -16,6 +16,7 @@ bool cuda_memory_releaser::log(void* dev_ptr)
 	if (it == cuda_pointers.end())
 	{
 		cuda_pointers.insert(dev_ptr);
+		return true;
 	}
 	return false;
 }

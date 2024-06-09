@@ -5,6 +5,8 @@
 #include "algorithms/validators/abstract_validator.h"
 #include "algorithms/model/randomization.cuh"
 
+#include "thrust/device_ptr.h"
+
 #include <random>
 #include <vector>
 
@@ -31,7 +33,7 @@ namespace algorithms
 			};
 
 		protected:
-			int N; // number of unit vectors not particles!
+			int N1; // number of unit vectors not particles!
 			int generation_size;
 			float mutation_ratio;
 			int* fitness;
