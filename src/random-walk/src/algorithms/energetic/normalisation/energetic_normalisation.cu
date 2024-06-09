@@ -93,7 +93,7 @@ bool algorithms::energetic::normalisation_method::run(vector3** result, void* p_
 		int number_of_blocks = (p->N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
 
 		// setting seed
-		algorithms::randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, p->N, time(0), OFFSET);
+		algorithms::randomization::kernel_setup << <number_of_blocks, EN_BLOCK_SIZE >> > (dev_states, p->N, SEED, OFFSET);
 		cuda_check_terminate(cudaDeviceSynchronize());
 
 		// main loop

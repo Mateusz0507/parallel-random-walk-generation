@@ -7,9 +7,9 @@ int main(int argc, char** argv)
 	parameters p;
 
 	algorithms::genetic::genetic_method::parameters params;
-	params.N = 100;
-	params.mutation_ratio = 0.05;
-	params.generation_size = 10;
+	params.N = 1000;
+	params.mutation_ratio = 0.1;
+	params.generation_size = 1000;
 
 	vector3* result = new vector3[params.N];
 
