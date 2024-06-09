@@ -31,7 +31,7 @@ namespace algorithms
 			};
 
 		protected:
-			int N;
+			int N; // number of unit vectors not particles!
 			int generation_size;
 			float mutation_ratio;
 			int* fitness;

@@ -53,7 +53,7 @@ void print_device_array(void* dev_ptr, int n, datatype type)
 
 bool algorithms::genetic::genetic_method::init(parameters* params)
 {
-	N = params->N;
+	N = params->N - 1;
 	generation_size = params->generation_size;
 	mutation_ratio = params->mutation_ratio;
 	number_of_blocks = (N + G_BLOCK_SIZE - 1) / G_BLOCK_SIZE;
@@ -77,7 +77,7 @@ bool algorithms::genetic::genetic_method::init(parameters* params)
 	cuda_allocate((void**)&dev_generation_idx, 2 * params->generation_size * sizeof(int), &allocation_failure);
 	cuda_allocate((void**)&dev_fitness,	2 * params->generation_size * sizeof(int), &allocation_failure);
 	cuda_allocate((void**)&dev_chromosomes, 2 * params->N * params->generation_size * sizeof(vector3), &allocation_failure);
-	cuda_allocate((void**)&dev_random_walk, params->N * sizeof(vector3), &allocation_failure);
+	cuda_allocate((void**)&dev_random_walk, (params->N + 1) * sizeof(vector3), &allocation_failure);
 	cuda_allocate((void**)&dev_states, params->N * sizeof(curandState), &allocation_failure);
 	cuda_allocate((void**)&dev_invalid_distances, params->N * sizeof(int), &allocation_failure);
 
@@ -250,7 +250,7 @@ void algorithms::genetic::genetic_method::fitness_function(int fitness_idx, int 
 {
  	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes_ptrs[chromosome_idx], dev_chromosomes_ptrs[chromosome_idx] + N, dev_random_walk_ptr, init_point, add));
 
-	kernel_fitness_function << <number_of_blocks, G_BLOCK_SIZE >> > (dev_random_walk, N, DISTANCE, G_PRECISSION, dev_invalid_distances);
+	kernel_fitness_function << <number_of_blocks, G_BLOCK_SIZE >> > (dev_random_walk, N + 1, DISTANCE, G_PRECISSION, dev_invalid_distances);
 	cuda_check_terminate(cudaDeviceSynchronize());
 
 	cuda_check_errors_status_terminate(fitness[fitness_idx] = thrust::reduce(dev_invalid_distances_ptr, dev_invalid_distances_ptr + N));
@@ -275,7 +275,7 @@ int algorithms::genetic::genetic_method::select_population()
 void algorithms::genetic::genetic_method::copy_solution(vector3** particles, int idx)
 {
 	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_chromosomes_ptrs[idx], dev_chromosomes_ptrs[idx] + N, dev_random_walk, init_point, add));
-	cuda_check_terminate(cudaMemcpy(*particles, dev_random_walk, N * sizeof(vector3), cudaMemcpyDeviceToHost));
+	cuda_check_terminate(cudaMemcpy(*particles, dev_random_walk, (N + 1) * sizeof(vector3), cudaMemcpyDeviceToHost));
 }
 
 void algorithms::genetic::genetic_method::terminate()
