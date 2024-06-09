@@ -34,6 +34,15 @@ std::string executable_path() {
 #endif
 }
 
+std::string format_number(float number, int size)
+{
+    std::ostringstream oss;
+	int digits_before_decimal_point = std::abs(number) < 10.0 ? 1 : static_cast<int>(std::log10(std::abs(number))) + 1;
+	int precision = size - digits_before_decimal_point - 2; // -2 is for minus and decimal point
+    oss << std::fixed << std::setw(size) << std::setprecision(precision) << number;
+    return oss.str();
+}
+
 bool create_pdb_file(vector3* points, const int N, const std::string file_name)
 {
 	if (N < 3) {
@@ -52,19 +61,30 @@ bool create_pdb_file(vector3* points, const int N, const std::string file_name)
 	// Save particles
 	for (int i = 0; i < N; i++)
 	{
-		file << std::right <<
-			"ATOM" << std::setw(7) <<
-			i + 1 << std::setw(3) <<
-			"B" << std::setw(6) <<
-			"BEA" << std::setw(2) <<
-			"A" << std::setw(4) <<
-			"0" << std::setprecision(3) << std::setw(12) <<
-			points[i].x << std::setw(8) <<
-			points[i].y << std::setw(8) <<
-			points[i].z << std::setw(6) <<
-			"0.00" << std::setw(6) <<
-			"0.00" << std::setw(12) <<
-			"B" << std::endl;
+		file <<
+			std::left <<
+			std::setw(6) << "ATOM" <<
+			std::right <<
+			std::setw(5) << i + 1 <<
+			" " <<
+			std::setw(4) << "B  " <<
+			std::setw(1) << "" <<
+			std::setw(3) << "BEA" <<
+			" " <<
+			std::setw(1) << "A" <<
+			std::setw(4) << "0" <<
+			std::setw(1) << "" <<
+			"   " <<
+			std::setprecision(3) <<
+			format_number(points[i].x, 8) <<
+			format_number(points[i].y, 8) <<
+			format_number(points[i].z, 8) <<
+			std::setw(6) << "0.00" <<
+			std::setw(6) << "0.00" <<
+			"          " <<
+			std::setw(2) << "B" <<
+			std::setw(2) << "" <<
+			std::endl;
 	}
 
 	// Save connections

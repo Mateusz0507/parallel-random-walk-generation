@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <iomanip>
+#include <sstream>
 
 #include "constants.h"
 #include "algorithms/model/particle.cuh"
@@ -17,4 +18,5 @@
 
 std::string executable_path();
 bool open_chimera(const std::string file_name);
+std::string format_number(float number, int size);
 bool create_pdb_file(vector3* points, const int N, const std::string file_name);
