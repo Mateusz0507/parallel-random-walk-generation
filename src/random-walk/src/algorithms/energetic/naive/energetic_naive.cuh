@@ -11,6 +11,16 @@
 #define EN_PRECISION (100 * EN_NUMERIC_EPSILON)
 #define EN_BLOCK_SIZE 256
 
+// #define _CONST_SEED
+#define _TIME_SEED
+
+#ifdef _CONST_SEED
+	#define SEED 0
+#elif defined(_TIME_SEED)
+	#define SEED std::time(nullptr)
+#endif 
+
+
 namespace algorithms
 {
 	namespace energetic

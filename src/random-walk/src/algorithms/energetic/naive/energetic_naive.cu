@@ -87,7 +87,8 @@ bool algorithms::energetic::naive_method::run(vector3** result, void* p_void)
 
     if (allocate_memory(p->N))
     {
-        if (!algorithms::directional_randomization::generate_starting_points(dev_points, p->N, p->directional_level, p->segments_number))
+        if (!algorithms::directional_randomization::generate_starting_positions(
+                nullptr, dev_points, p->N, p->directional_level, p->segments_number, SEED))
             return false;
 
 
@@ -98,13 +99,15 @@ bool algorithms::energetic::naive_method::run(vector3** result, void* p_void)
             release_memory();
             return false;
         }
-        create_pdb_file(points_before_algorithm, p->N, "before");
-        open_chimera("before");
+        create_pdb_file(points_before_algorithm, p->N, BEFORE_PDB_FILE_NAME);
+        open_chimera(BEFORE_PDB_FILE_NAME);
+        delete[] points_before_algorithm;
 
 
         while (!validator.validate(dev_points, p->N, DISTANCE, EN_PRECISION))
         {
-            iteration<<<p->N /32 + 1, 32>>>(dev_points, p->N);
+            int number_of_blocks = (p->N + EN_BLOCK_SIZE - 1) / EN_BLOCK_SIZE;
+            iteration<<<number_of_blocks, EN_BLOCK_SIZE>>>(dev_points, p->N);
         }
 
         if (!cuda_check_continue(cudaMemcpy(*result, dev_points, p->N * sizeof(vector3), cudaMemcpyDeviceToHost)))

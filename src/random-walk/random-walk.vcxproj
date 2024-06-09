@@ -31,8 +31,8 @@
     <ClInclude Include="src\common\common.h" />
     <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\main.h" />
-    <ClInclude Include="src\parametrization\names.h" />
     <ClInclude Include="src\parametrization\program_parametrization.h" />
+    <ClInclude Include="src\tests\tests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\algorithms\abstract_method.cpp" />
@@ -41,6 +41,7 @@
     <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
+    <ClCompile Include="src\tests\tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\algorithms\cuda_memory_releaser.cu" />

@@ -3,11 +3,14 @@
 
 void program_parametrization::print_usage(const char* name)
 {
-    std::cerr << "Usage " << name << ":" << std::endl;
-    std::cerr << "[-m/--method]=[naive/normalization/genetic]" << std::endl;
-    std::cerr << "[-N/--N]=[int]" << std::endl;
-    std::cerr << "[-d/--directional-level]=[int]" << std::endl;
-    std::cerr << "[-s/--segments--number]=[int]" << std::endl;
+    std::cerr << "Usage " << name << ":" << std::endl
+    << "[-m/--method]=[naive/normalization/genetic] (default:naive)" << std::endl
+    << "[-N/--N]=[int] (default:100)" << std::endl
+    << "[-d/--directional-level]=[int] (default:0)" << std::endl
+    << "[-s/--segments--number]=[int] (default:1)" << std::endl
+    << "Parameters for genetic method only:" << std::endl
+    << "   --mutation-ratio=[float] (default:0.05)" << std::endl
+    << "   --generation-size=[int] (default:10)" << std::endl;
 }
 
 bool program_parametrization::read(int argc, char** argv, parameters& p)
@@ -40,6 +43,20 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
         }
         else if (std::string(parameter) == "-s" || std::string(parameter) == "--segments-number") {
             p.segments_number = atoi(value);
+        }
+        else if (std::string(p.method) == "genetic")
+        {
+            if (std::string(parameter) == "--mutation-ratio") {
+                p.mutation_ratio = atof(value);
+            }
+            else if (std::string(parameter) == "--generation-size") {
+                p.generation_size = atoi(value);
+            }
+            else
+            {
+                print_usage(name);
+                return false;
+            }
         }
         else
         {
