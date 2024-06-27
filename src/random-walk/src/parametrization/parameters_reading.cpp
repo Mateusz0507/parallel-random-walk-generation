@@ -4,11 +4,11 @@
 void program_parametrization::print_usage(const char* name)
 {
     std::cerr << "Usage " << name << ":" << std::endl
-    << "[-m/--method]=[naive/normalization/genetic] (default:naive)" << std::endl
+    << "[-m/--method]=[naive/normalization/genetic/genetic2] (default:naive)" << std::endl
     << "[-N/--N]=[int] (default:100)" << std::endl
     << "[-d/--directional-level]=[int] (default:0)" << std::endl
     << "[-s/--segments--number]=[int] (default:1)" << std::endl
-    << "Parameters for genetic method only:" << std::endl
+    << "Parameters for genetic/genetic2 method only:" << std::endl
     << "   --mutation-ratio=[float] (default:0.05)" << std::endl
     << "   --generation-size=[int] (default:10)" << std::endl;
 }
@@ -28,7 +28,7 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
         }
 
         if (std::string(parameter) == "-m" || std::string(parameter) == "--method") {
-            if (std::string(value) != "naive" && std::string(value) != "normalization" && std::string(value) != "genetic")
+            if (std::string(value) != "naive" && std::string(value) != "normalization" && std::string(value) != "genetic" && std::string(value) != "genetic2")
             {
                 print_usage(name);
                 return false;
@@ -44,7 +44,7 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
         else if (std::string(parameter) == "-s" || std::string(parameter) == "--segments-number") {
             p.segments_number = atoi(value);
         }
-        else if (std::string(p.method) == "genetic")
+        else if (std::string(p.method) == "genetic" || std::string(p.method) == "genetic2")
         {
             if (std::string(parameter) == "--mutation-ratio") {
                 p.mutation_ratio = atof(value);
