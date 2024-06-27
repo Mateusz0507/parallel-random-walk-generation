@@ -12,49 +12,6 @@
 #include <iostream>
 #include <csignal>
 
-// added
-int best_N_glob;
-vector3* dev_current_best_glob;
-vector3* dev_random_walk_glob;
-
-void algorithms::genetic::genetic_improved_method::print_device_array(void* dev_ptr, int n, datatype type)
-{
-	void* host_ptr;
-	size_t size;
-	switch (type)
-	{
-	case datatype::integer:
-		host_ptr = new int[n];
-		size = n * sizeof(int);
-		break;
-	case datatype::vector3:
-		host_ptr = new vector3[n];
-		size = n * sizeof(vector3);
-		break;
-	}
-	if (!host_ptr ||
-		!cuda_check_continue(cudaMemcpy(host_ptr, dev_ptr, size, cudaMemcpyDeviceToHost)))
-	{
-		return;
-	}
-
-	for (int i = 0; i < n; i++)
-	{
-		switch (type)
-		{
-		case datatype::integer:
-			std::cout << ((int*)host_ptr)[i] << std::endl;
-			break;
-		case datatype::vector3:
-			vector3& vec = ((vector3*)host_ptr)[i];
-			std::cout << vec.x << ", " << vec.y << ", " << vec.z << std::endl;
-			break;
-		}
-	}
-	std::cout << std::endl;
-	delete[] host_ptr;
-}
-
 bool algorithms::genetic::genetic_improved_method::init(parameters* params)
 {
 	N1 = params->N - 1;
@@ -110,11 +67,6 @@ bool algorithms::genetic::genetic_improved_method::init(parameters* params)
 	else
 	{
 		terminate();
-	}
-
-	{
-		signal(SIGINT, sigint_handler); // added
-		dev_random_walk_glob = dev_random_walk;
 	}
 
 	return !allocation_failure;
@@ -232,17 +184,7 @@ void algorithms::genetic::genetic_improved_method::fitness_function(int fitness_
 	kernel_improved_fitness_function << <number_of_blocks, G_BLOCK_SIZE >> > (dev_random_walk, N1 + 1, DISTANCE, G_PRECISSION, dev_valid_points, dev_random_walk_idx);
 	cuda_check_terminate(cudaDeviceSynchronize());
 
-	//{
-	//	print_device_array(dev_valid_points, N1 + 1, datatype::integer);
-	//	print_device_array(dev_random_walk_idx, N1 + 1, datatype::integer);
-	//}
-
 	cuda_check_errors_status_terminate(thrust::sort_by_key(dev_valid_points_ptr, dev_valid_points_ptr + N1 + 1, dev_random_walk_idx_ptr));
-
-	//{
-	//	print_device_array(dev_valid_points, N1 + 1, datatype::integer);
-	//	print_device_array(dev_random_walk_idx, N1 + 1, datatype::integer);
-	//}
 
 	int fitness_function_value;
 	cuda_check_terminate(cudaMemcpy(&fitness_function_value, dev_random_walk_idx, sizeof(int), cudaMemcpyDeviceToHost));
@@ -256,14 +198,6 @@ int algorithms::genetic::genetic_improved_method::select_population()
 
 	int best_fitness_function;
 	cuda_check_terminate(cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost));
-
-	// added
-	{ 
-		best_N_glob = -best_fitness_function;
-		int best_idx;
-		cuda_check_terminate(cudaMemcpy(&best_idx, dev_generation_idx, sizeof(int), cudaMemcpyDeviceToHost));
-		dev_current_best_glob = dev_chromosomes + best_idx * N1;
-	}
 
 	if (best_fitness_function > -N1)
 	{
@@ -300,48 +234,3 @@ void algorithms::genetic::genetic_improved_method::terminate()
 	}
 }
 
-void algorithms::genetic::genetic_improved_method::print_state()
-{
-	static int i = 0;
-	std::cout << "State " << i++ << std::endl;
-
-	for (int i = 0; i < 2 * generation_size; i++)
-	{
-		std::cout << "Chromosome " << i << std::endl;
-		print_device_array(dev_chromosomes + i * N1, N1, datatype::vector3);
-	}
-	std::cout << "Fitness function" << std::endl;
-	print_device_array(dev_fitness, 2 * generation_size, datatype::integer);
-	std::cout << "Random walk" << std::endl;
-	print_device_array(dev_random_walk, N1 + 1, datatype::vector3);
-	std::cout << "Generation idx" << std::endl;
-	print_device_array(dev_generation_idx, 2 * generation_size, datatype::integer);
-	std::cout << "Valid points" << std::endl;
-	print_device_array(dev_valid_points, N1 + 1, datatype::integer);
-}
-
-
-void algorithms::genetic::sigint_handler(int sig_num) // added
-{
-	int N = best_N_glob;
-	vector3* best_random_walk = new vector3[N];
-	if (!best_random_walk)
-		exit(1);
-
-	thrust::device_ptr<vector3> dev_current_best_glob_ptr(dev_current_best_glob);
-	thrust::device_ptr<vector3> dev_random_walk_glob_ptr(dev_random_walk_glob);
-	vector3 init = { 0.0, 0.0, 0.0 };
-	model::add_vector3 add;
-
-	int offset = 5;
-
-	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_current_best_glob_ptr,
-		dev_current_best_glob_ptr + N + offset, dev_random_walk_glob, init, add));
-	cuda_check_terminate(cudaMemcpy(best_random_walk, dev_random_walk_glob, (N + offset) * sizeof(vector3), cudaMemcpyDeviceToHost));
-
-	create_pdb_file(best_random_walk, N + offset, "at_exit_best");
-	open_chimera("at_exit_best");
-
-	delete[] best_random_walk;
-	exit(1);
-}
