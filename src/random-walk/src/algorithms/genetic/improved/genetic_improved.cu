@@ -7,14 +7,15 @@
 #include "algorithms/genetic/improved/genetic_improved.cuh"
 #include "algorithms/model/particle.cuh"
 #include "algorithms/genetic/kernels.cuh"
+#include "chimera/chimera.h"
 
 #include <iostream>
+#include <csignal>
 
-enum class datatype
-{
-	integer,
-	vector3
-};
+// added
+int best_N_glob;
+vector3* dev_current_best_glob;
+vector3* dev_random_walk_glob;
 
 void algorithms::genetic::genetic_improved_method::print_device_array(void* dev_ptr, int n, datatype type)
 {
@@ -111,6 +112,11 @@ bool algorithms::genetic::genetic_improved_method::init(parameters* params)
 		terminate();
 	}
 
+	{
+		signal(SIGINT, sigint_handler); // added
+		dev_random_walk_glob = dev_random_walk;
+	}
+
 	return !allocation_failure;
 }
 
@@ -181,6 +187,13 @@ __global__ void kernel_improved_crossover_and_mutate(vector3* dev_chromosomes, i
 		{
 			int i = 0;
 			algorithms::randomization::generate_random_unit_vector(&dev_chromosomes[tid + dev_generation_idx[child_idx] * N1], &dev_states[tid]);
+			int idx = tid + dev_generation_idx[child_idx] * N1;
+
+			while (tid > 0 && ++i < 15 && 
+				algorithms::model::dot(dev_chromosomes[idx], dev_chromosomes[idx - 1]) < -0.5)
+			{
+				algorithms::randomization::generate_random_unit_vector(&dev_chromosomes[tid + dev_generation_idx[child_idx] * N1], &dev_states[tid]);
+			}
 		}
 	}
 }
@@ -243,6 +256,15 @@ int algorithms::genetic::genetic_improved_method::select_population()
 
 	int best_fitness_function;
 	cuda_check_terminate(cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost));
+
+	// added
+	{ 
+		best_N_glob = -best_fitness_function;
+		int best_idx;
+		cuda_check_terminate(cudaMemcpy(&best_idx, dev_generation_idx, sizeof(int), cudaMemcpyDeviceToHost));
+		dev_current_best_glob = dev_chromosomes + best_idx * N1;
+	}
+
 	if (best_fitness_function > -N1)
 	{
 		std::cout << best_fitness_function << std::endl;
@@ -296,4 +318,30 @@ void algorithms::genetic::genetic_improved_method::print_state()
 	print_device_array(dev_generation_idx, 2 * generation_size, datatype::integer);
 	std::cout << "Valid points" << std::endl;
 	print_device_array(dev_valid_points, N1 + 1, datatype::integer);
+}
+
+
+void algorithms::genetic::sigint_handler(int sig_num) // added
+{
+	int N = best_N_glob;
+	vector3* best_random_walk = new vector3[N];
+	if (!best_random_walk)
+		exit(1);
+
+	thrust::device_ptr<vector3> dev_current_best_glob_ptr(dev_current_best_glob);
+	thrust::device_ptr<vector3> dev_random_walk_glob_ptr(dev_random_walk_glob);
+	vector3 init = { 0.0, 0.0, 0.0 };
+	model::add_vector3 add;
+
+	int offset = 5;
+
+	cuda_check_errors_status_terminate(thrust::exclusive_scan(dev_current_best_glob_ptr,
+		dev_current_best_glob_ptr + N + offset, dev_random_walk_glob, init, add));
+	cuda_check_terminate(cudaMemcpy(best_random_walk, dev_random_walk_glob, (N + offset) * sizeof(vector3), cudaMemcpyDeviceToHost));
+
+	create_pdb_file(best_random_walk, N + offset, "at_exit_best");
+	open_chimera("at_exit_best");
+
+	delete[] best_random_walk;
+	exit(1);
 }

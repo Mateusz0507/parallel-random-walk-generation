@@ -16,13 +16,13 @@ int main(int argc, char** argv)
 	{
 		algorithms::genetic::genetic_improved_method::parameters params;
 		params.N = p.N = 500;
-		params.generation_size = p.generation_size = 40;
+		params.generation_size = p.generation_size = 1000;
 		params.mutation_ratio = p.mutation_ratio = 0.04;
-		algorithms::genetic::genetic_method method;
+		algorithms::genetic::genetic_improved_method method;
 		method.run(&result, &params);
 	}
 
-	/*if (std::string(p.method) == "naive")
+	if (std::string(p.method) == "naive")
 	{
 		auto method = algorithms::energetic::naive_method::naive_method(validator);
 
@@ -54,7 +54,18 @@ int main(int argc, char** argv)
 		genetic_parameters.generation_size = p.generation_size;
 
 		method.run(&result, &genetic_parameters);
-	}*/
+	}
+	else if (std::string(p.method) == "genetic2")
+	{
+		algorithms::genetic::genetic_improved_method method;
+
+		algorithms::genetic::genetic_improved_method::parameters genetic_parameters;
+		genetic_parameters.N = p.N;
+		genetic_parameters.mutation_ratio = p.mutation_ratio;
+		genetic_parameters.generation_size = p.generation_size;
+
+		method.run(&result, &genetic_parameters);
+	}
 
 	std::chrono::steady_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);

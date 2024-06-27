@@ -29,6 +29,10 @@ namespace algorithms
 
 		__host__ __device__ real_t norm(const vector3& a);
 
+		__host__ __device__ real_t dot(real_t ax, real_t ay, real_t az, real_t bx, real_t by, real_t bz);
+
+		__host__ __device__ real_t dot(const vector3& a, const vector3& b);
+
 		class add_vector3
 		{
 		public:

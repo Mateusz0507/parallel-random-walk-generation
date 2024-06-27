@@ -82,6 +82,8 @@ namespace algorithms
 			void terminate();
 			void print_state();
 			void print_device_array(void* dev_ptr, int n, datatype type);
+
+			friend void sigint_handler(int sig_num); // added
 		};
 	}
 }
