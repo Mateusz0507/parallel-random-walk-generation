@@ -4,7 +4,6 @@
 int main(int argc, char** argv)
 {
 	parameters p;
-
 	if (!read(argc, argv, p))
 		return 1;
 
@@ -12,15 +11,6 @@ int main(int argc, char** argv)
 	vector3* result = new vector3[p.N];
 
 	std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
-	
-	{
-		algorithms::genetic::genetic_improved_method::parameters params;
-		params.N = p.N = 500;
-		params.generation_size = p.generation_size = 1000;
-		params.mutation_ratio = p.mutation_ratio = 0.04;
-		algorithms::genetic::genetic_improved_method method;
-		method.run(&result, &params);
-	}
 
 	if (std::string(p.method) == "naive")
 	{

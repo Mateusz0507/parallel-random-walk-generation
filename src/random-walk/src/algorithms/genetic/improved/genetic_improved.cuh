@@ -74,16 +74,12 @@ namespace algorithms
 
 			bool init(parameters* parameters);
 			void first_generation();
-			void next_generation(); // TODO
+			void next_generation();
 			void compute_fitness_function();
 			void fitness_function(int fitness_idx, int chromosome_idx);
 			int select_population();
 			void copy_solution(vector3** particles, int idx);
 			void terminate();
-			void print_state();
-			void print_device_array(void* dev_ptr, int n, datatype type);
-
-			friend void sigint_handler(int sig_num); // added
 		};
 	}
 }

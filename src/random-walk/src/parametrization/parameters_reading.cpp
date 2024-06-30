@@ -7,7 +7,7 @@ void program_parametrization::print_usage(const char* name)
     << "[-m/--method]=[naive/normalization/genetic/genetic2] (default:naive)" << std::endl
     << "[-N/--N]=[int] (default:100)" << std::endl
     << "[-d/--directional-level]=[int] (default:0)" << std::endl
-    << "[-s/--segments--number]=[int] (default:1)" << std::endl
+    << "[-s/--segments-number]=[int] (default:1)" << std::endl
     << "Parameters for genetic/genetic2 method only:" << std::endl
     << "   --mutation-ratio=[float] (default:0.05)" << std::endl
     << "   --generation-size=[int] (default:10)" << std::endl;

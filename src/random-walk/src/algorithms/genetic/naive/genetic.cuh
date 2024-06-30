@@ -72,7 +72,6 @@ namespace algorithms
 			int select_population();
 			void copy_solution(vector3** particles, int idx);
 			void terminate();
-			void print_state();
 		};
 	}
 }

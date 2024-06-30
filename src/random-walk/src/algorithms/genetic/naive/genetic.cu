@@ -10,48 +10,6 @@
 
 #include <iostream>
 
-enum class datatype 
-{
-	integer,
-	vector3
-};
-
-void print_device_array(void* dev_ptr, int n, datatype type)
-{
-	void* host_ptr;
-	size_t size;
-	switch (type)
-	{
-	case datatype::integer:
-		host_ptr = new int[n];
-		size = n * sizeof(int);
-		break;
-	case datatype::vector3:
-		host_ptr = new vector3[n];
-		size = n * sizeof(vector3);
-		break;
-	}
-	if (!host_ptr || 
-		!cuda_check_continue(cudaMemcpy(host_ptr, dev_ptr, size, cudaMemcpyDeviceToHost))) 
-	{ return; }
-
-	for (int i = 0; i < n; i++)
-	{
-		switch (type)
-		{
-		case datatype::integer:
-			std::cout << ((int*)host_ptr)[i] << std::endl;
-			break;
-		case datatype::vector3:
-			vector3& vec = ((vector3*)host_ptr)[i];
-			std::cout << vec.x << ", " << vec.y << ", " << vec.z << std::endl;
-			break;
-		}
-	}
-	std::cout << std::endl;
-	delete[] host_ptr;
-}
-
 bool algorithms::genetic::genetic_method::init(parameters* params)
 {
 	N1 = params->N - 1;
@@ -286,24 +244,4 @@ void algorithms::genetic::genetic_method::terminate()
 	{
 		delete[] new_generation_idx;
 	}
-}
-
-void algorithms::genetic::genetic_method::print_state()
-{	
-	static int i = 0;
-	std::cout << "State " << i++ << std::endl;
-
-	for (int i = 0; i < 2 * generation_size; i++)
-	{
-		std::cout << "Chromosome " << i << std::endl;
-		print_device_array(dev_chromosomes + i * N1, N1, datatype::vector3);
-	}
-	std::cout << "Fitness function" << std::endl;
-	print_device_array(dev_fitness, 2 * generation_size, datatype::integer);
-	std::cout << "Random walk" << std::endl;
-	print_device_array(dev_random_walk, N1 + 1, datatype::vector3);
-	std::cout << "Generation idx" << std::endl;
-	print_device_array(dev_generation_idx, 2 * generation_size, datatype::integer);
-	std::cout << "Invalid array" << std::endl;
-	print_device_array(dev_invalid_distances, N1 + 1, datatype::integer);
 }
