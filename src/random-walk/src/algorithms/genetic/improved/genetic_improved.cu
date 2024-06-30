@@ -87,13 +87,10 @@ bool algorithms::genetic::genetic_improved_method::run(vector3** particles, void
 		int solution_idx = -1;
 		while (solution_idx < 0)
 		{
+			std::cout << "iteration: " << iteration++ << ", ";
 			next_generation();
-			//print_device_array(dev_fitness, 2 * generation_size, datatype::integer);
 			compute_fitness_function();
-			//print_device_array(dev_fitness, 2 * generation_size, datatype::integer);
 			solution_idx = select_population();
-			std::cout << "Iteration " << ++iteration << std::endl;
-			// print_state();
 		}
 		copy_solution(particles, solution_idx);
 		terminate();
@@ -201,7 +198,7 @@ int algorithms::genetic::genetic_improved_method::select_population()
 
 	if (best_fitness_function > -N1)
 	{
-		std::cout << best_fitness_function << std::endl;
+		std::cout << "fitness function: " << best_fitness_function << std::endl;
 		return -1;
 	}
 	int best_idx;

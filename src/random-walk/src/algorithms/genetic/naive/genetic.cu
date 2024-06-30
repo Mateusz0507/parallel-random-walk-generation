@@ -83,11 +83,10 @@ bool algorithms::genetic::genetic_method::run(vector3** particles, void* params)
 		int solution_idx = -1;
 		while (solution_idx < 0) 
 		{
+			std::cout << "iteration: " << iteration++ << ", ";
 			next_generation();
 			compute_fitness_function(); 
 			solution_idx = select_population(); 
-			std::cout << ++iteration << std::endl;
-			//print_state();
  		}
 		copy_solution(particles, solution_idx);
 		terminate();
@@ -214,7 +213,7 @@ int algorithms::genetic::genetic_method::select_population()
 	cudaMemcpy(&best_fitness_function, dev_fitness, sizeof(int), cudaMemcpyDeviceToHost);
 	if (best_fitness_function > 0)
 	{
-		std::cout << best_fitness_function << std::endl;
+		std::cout << "invalid: " << best_fitness_function << std::endl;
 		return -1;
 	}
 	int best_idx;

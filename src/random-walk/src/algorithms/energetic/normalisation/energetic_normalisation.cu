@@ -76,7 +76,7 @@ bool algorithms::energetic::normalisation_method::main_loop(parameters* p, int m
 		thrust::fill(dev_points_ptr, dev_points_ptr + 1, starting_point);
 		cuda_check_errors_status_terminate(thrust::inclusive_scan(dev_unit_vectors_ptr, dev_unit_vectors_ptr + (p->N - 1), dev_points_ptr + 1, add));
 
-		std::cout << iterations << std::endl;
+		std::cout << "iteration: " << iterations << ", ";
 	} while (!validator.validate(dev_points, p->N, DISTANCE, EN_PRECISION) && (iterations++ < max_iterations || max_iterations < 0));
 	return iterations < max_iterations || max_iterations < 0;
 }
