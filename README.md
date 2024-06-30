@@ -23,7 +23,7 @@ The program can be executed with the following parameters:
 - --mutation-ration: Mutation probability for genetic methods (value between 0 and 1 or exactly 0 or 1).
 - --generation-size: Generation size in genetic algorithms (at least 8).
 
-###Example
+### Examples
 1. The following example invokes naive energetic method with directional level 2, which is divided into 5 segments.
 ```bash
 >random-walk.exe --method=naive --directional-level=2 --segments-number=5
