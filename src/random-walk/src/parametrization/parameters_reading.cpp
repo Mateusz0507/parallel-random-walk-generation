@@ -9,7 +9,7 @@ void program_parametrization::print_usage(const char* name)
     << "[-d/--directional-level]=[int >= 0] (default:0)" << std::endl
     << "[-s/--segments-number]=[int >= 1] (default:1)" << std::endl
     << "Parameters for genetic/genetic2 method only:" << std::endl
-    << "   --mutation-ratio=[float >= 0] (default:0.05)" << std::endl
+    << "   --mutation-ratio=[float from [0, 1]] (default:0.05)" << std::endl
     << "   --generation-size=[int >= 8] (default:10)" << std::endl;
 }
 
@@ -63,9 +63,9 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
         {
             if (std::string(parameter) == "--mutation-ratio") {
                 p.mutation_ratio = atof(value);
-                if (p.mutation_ratio < 0)
+                if (p.mutation_ratio < 0 || p.mutation_ratio > 1)
                 {
-                    std::cerr << "Invalid parameter value: mutation-ratio >= 0" << std::endl;
+                    std::cerr << "Invalid parameter value: mutation-ratio from [0, 1]" << std::endl;
                     return false;
                 }
             }
