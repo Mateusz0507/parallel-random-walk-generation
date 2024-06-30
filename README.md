@@ -18,9 +18,9 @@ These settings enable separate compilation of the .cu files.
 ## Usage
 The program can be executed with the following parameters:
 - -m/--method: Specifies the generation method. Possible values: naive (default value), normalization, genetic, genetic2.
-- -N/--N: Specifies the length of the path (number of particles). Default value equals 100.
-- -d/--directional-level: Directional coefficient for energy-based methods, a natural number. Higher values result in a more directed distribution. 
-- -s/--segments-number: Number of segments into which the path is divided in directional sampling.
+- -N/--N: Specifies the length of the path (number of particles). Default value equals 100 (at least 3).
+- -d/--directional-level: Directional coefficient for energy-based methods. Higher values result in a more directed distribution (at least 0).
+- -s/--segments-number: Number of segments into which the path is divided in directional sampling (at least 1).
 - --mutation-ration: Mutation probability for genetic methods (value between 0 and 1 or exactly 0 or 1).
 - --generation-size: Generation size in genetic algorithms (at least 8).
 
@@ -29,8 +29,8 @@ The program can be executed with the following parameters:
 ```bash
 >random-walk.exe --method=naive --directional-level=2 --segments-number=5
 ```
-2. Execution of improved genetic method with mutation ration equal to 0.04 and generation size 100
+2. Execution of improved genetic method with mutation ration equal to 0.04 and generation size 100.
 ```bash
->random-walk.exe -m genetic2 --mutation-ratio=0.04 --generation-size=100
+>random-walk.exe -m=genetic2 --mutation-ratio=0.04 --generation-size=100
 ```
 
