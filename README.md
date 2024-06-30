@@ -9,9 +9,10 @@ Parallel random walk generator is a tool for generating self avoiding random wal
   
 ## Compilation
 In order to build the project, you need to set the following flags in VS:
-- Configuration Properties -> CUDA C/C++ -> Common -> Generate Relocatable Device Code -> Yes (-rdc=true) \
-- Configuration Properties -> CUDA C/C++ -> Device -> Code Generation -> compute_52,sm_52 \
+- Configuration Properties -> CUDA C/C++ -> Common -> Generate Relocatable Device Code -> Yes (-rdc=true) 
+- Configuration Properties -> CUDA C/C++ -> Device -> Code Generation -> compute_52,sm_52 
 - Configuration Properties -> Linker -> Input -> Additional Dependencies -> cudadevrt.lib
+
 These settings enable separate compilation of the .cu files.
 
 ## Usage
