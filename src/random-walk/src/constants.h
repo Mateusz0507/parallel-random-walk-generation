@@ -6,5 +6,7 @@
 /* Example: "\"C:\\Program Files\\Chimera 1.17.3\\bin\\chimera.exe\"" */
 const std::string CHIMERA_PATH = "\"C:\\Program Files\\Chimera 1.17.3\\bin\\chimera.exe\"";
 
+const std::string PDB_FILES_FOLDER_PATH_RELATIVE_TO_EXE = "/../../../../pdb_files/";
 
-const std::string FILE_PATH = "../../walk.pdb";
+const std::string CSV_FILE_NAME = "tests";
+const std::string CSV_FILE_PATH_RELATIVE_TO_EXE = "/../../../../";

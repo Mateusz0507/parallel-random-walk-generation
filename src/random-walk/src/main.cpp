@@ -1,77 +1,69 @@
 #include "main.h"
 
-#include "algorithms/energetic/naive/energetic_naive.cuh"
-#include "algorithms/energetic/validators/single_check_validator.cuh"
-
-
-bool create_file(algorithms::model::particle* points, const int N)
-{
-	if (N < 3) {
-		std::cerr << "Number of particles is less than 3!" << std::endl;
-		return false;
-	}
-
-	std::ofstream file("../../walk.pdb");
-
-	if (!file) {
-		std::cerr << "Failed to open the file for writing!" << std::endl;
-		return false;
-	}
-
-	// Save particles
-	for (int i = 0; i < N; i++)
-	{
-		file << std::right <<
-			"ATOM" << std::setw(7) <<
-			i+1 << std::setw(3) <<
-			"B" << std::setw(6) <<
-			"BEA" << std::setw(2) <<
-			"A" << std::setw(4) <<
-			"0" << std::setprecision(3) << std::setw(12) <<
-			points[i].x << std::setw(8) <<
-			points[i].y << std::setw(8) <<
-			points[i].z << std::setw(6) <<
-			"0.00" << std::setw(6) <<
-			"0.00" << std::setw(12) <<
-			"B" << std::endl;
-	}
-
-	// Save connections
-	int i = 1;
-	file << std::right << "CONECT" << std::setw(5) << i << std::setw(5) << i+1 << std::endl;
-	for (i = 2; i < N; i++)
-	{
-		file << std::right << "CONECT" << std::setw(5) << i << std::setw(5) << i-1 << std::setw(5) << i+1 << std::endl;
-	}
-	file << std::right << "CONECT" << std::setw(5) << i << std::setw(5) << i-1 << std::endl;
-
-	file.close();
-	std::cout << "File created successfully." << std::endl;
-	return true;
-}
-
-
-bool open_chimera()
-{
-	std::string command = CHIMERA_PATH + " " + FILE_PATH;
-	system(command.c_str());
-	return true;
-}
-
 
 int main(int argc, char** argv)
 {
 	parameters p;
-	if (read(argc, argv, p))
+	if (!read(argc, argv, p))
+		return 1;
+
+	auto validator = algorithms::validators::single_check_validator::single_check_validator();
+	vector3* result = new vector3[p.N];
+
+	std::chrono::steady_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+
+	if (std::string(p.method) == "naive")
 	{
-		if (p.method == 0)
-		{
-			algorithms::energetic::validators::single_check_validator validator = algorithms::energetic::validators::single_check_validator::single_check_validator();
-			algorithms::energetic::naive_method method = algorithms::energetic::naive_method::naive_method(validator);
-			algorithms::model::particle* result = new algorithms::model::particle[p.length];
-			method.run(&result, p.length);
-			if(create_file(result, p.length))
-				open_chimera();
-		}
+		auto method = algorithms::energetic::naive_method::naive_method(validator);
+
+		algorithms::energetic::naive_method::parameters naive_parameters;
+		naive_parameters.N = p.N;
+		naive_parameters.directional_level = p.directional_level;
+		naive_parameters.segments_number = p.segments_number;
+
+		method.run(&result, &naive_parameters);
 	}
+	else if (std::string(p.method) == "normalization")
+	{
+		auto method = algorithms::energetic::normalisation_method(validator);
+
+		algorithms::energetic::normalisation_method::parameters normalization_parameters;
+		normalization_parameters.N = p.N;
+		normalization_parameters.directional_level = p.directional_level;
+		normalization_parameters.segments_number = p.segments_number;
+
+		method.run(&result, &normalization_parameters);
+	}
+	else if (std::string(p.method) == "genetic")
+	{
+		algorithms::genetic::genetic_method method;
+
+		algorithms::genetic::genetic_method::parameters genetic_parameters;
+		genetic_parameters.N = p.N;
+		genetic_parameters.mutation_ratio = p.mutation_ratio;
+		genetic_parameters.generation_size = p.generation_size;
+
+		method.run(&result, &genetic_parameters);
+	}
+	else if (std::string(p.method) == "genetic2")
+	{
+		algorithms::genetic::genetic_improved_method method;
+
+		algorithms::genetic::genetic_improved_method::parameters genetic_parameters;
+		genetic_parameters.N = p.N;
+		genetic_parameters.mutation_ratio = p.mutation_ratio;
+		genetic_parameters.generation_size = p.generation_size;
+
+		method.run(&result, &genetic_parameters);
+	}
+
+	std::chrono::steady_clock::time_point end_time = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+	if (create_pdb_file(result, p.N, AFTER_PDB_FILE_NAME))
+		open_chimera(AFTER_PDB_FILE_NAME);
+
+	add_test_to_csv(p, duration.count());
+
+	delete[] result;
 }

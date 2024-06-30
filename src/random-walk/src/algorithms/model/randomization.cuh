@@ -16,9 +16,9 @@ namespace algorithms
 {
 	namespace randomization
 	{
-		// https://www.bogotobogo.com/Algorithms/uniform_distribution_sphere.php
-		__device__ real_t cuda_rand_uniform_bow(curandState* state);
+		// article that describes uniform distribution on a sphere https://www.bogotobogo.com/Algorithms/uniform_distribution_sphere.php
 		__global__ void kernel_setup(curandState* dev_states, int N, uint64_t seed, uint64_t offset);
-		__global__ void kernel_generate_random_unit_vectors(algorithms::model::particle* dev_unit_vectors, curandState* dev_states, int N);
+		__global__ void kernel_generate_random_unit_vectors(vector3* dev_unit_vectors, curandState* dev_states, int N);
+		__device__ void generate_random_unit_vector(vector3* dev_dst_unit_vector, curandState* dev_state);
 	}
 }

@@ -1,7 +1,7 @@
 #pragma once
-#include "algorithms/energetic/validators/single_check_validator.cuh"
+#include "algorithms/validators/single_check_validator.cuh"
 
-__global__ void kernel_validate(const algorithms::model::particle* dev_data, int N, const float distance, const float precision, int* dev_is_invalid)
+__global__ void kernel_validate(const vector3* dev_data, int N, const real_t distance, const real_t precision, int* dev_is_invalid)
 {
     const int index = threadIdx.x + blockIdx.x * blockDim.x;
 	if (index < N)
@@ -12,15 +12,18 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 
 		int invalid_count = 0;
 
-		if (abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1 == N ? 0 : index + 1]) - distance) > precision)
+		if (index + 1 != N && abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1]) - distance) > precision)
 		{
-			// case when the following particle is in different distance than the specified as an parameter
+			// case when the following vector3 is in different distance than the specified as an parameter
 			invalid_count++;
 		}
 
 		for (int i = index + 2, j = i; i < index + range + 1; i++, j++)
 		{
-			if (j >= N) j = 0;
+			if (j >= N) 
+			{
+				j -= N;
+			}
 			if (algorithms::model::get_distance(dev_data[index], dev_data[j]) < distance - precision)
 			{
 				invalid_count++;
@@ -31,14 +34,14 @@ __global__ void kernel_validate(const algorithms::model::particle* dev_data, int
 	}
 }
 
-bool algorithms::energetic::validators::single_check_validator::validate(model::particle* dev_data, int N, float distance, float precision)
+bool algorithms::validators::single_check_validator::validate(vector3* dev_data, int N, real_t distance, real_t precision)
 {
 	// checking parameters
 	if (dev_data == nullptr || N < 1 || distance < 0 || precision < 0)
 		return false;
 	
 	if (!prepare_device_memory(N))
-		return -1;
+		return false;
 
 	int number_of_blocks = (N + SCV_BLOCK_SIZE - 1) / SCV_BLOCK_SIZE;
 
@@ -51,10 +54,12 @@ bool algorithms::energetic::validators::single_check_validator::validate(model::
 	int invalid;
 	cuda_check_errors_status_terminate(invalid = thrust::reduce(dev_is_valid_ptr, dev_is_valid_ptr + N));
 
+	std::cout << "invalid: " << invalid << std::endl;
+
 	return invalid == 0;
 }
 
-bool algorithms::energetic::validators::single_check_validator::prepare_device_memory(int N)
+bool algorithms::validators::single_check_validator::prepare_device_memory(int N)
 {
 	if (validation_array_size < N)
 	{
@@ -68,7 +73,7 @@ bool algorithms::energetic::validators::single_check_validator::prepare_device_m
 	return true;
 }
 
-algorithms::energetic::validators::single_check_validator::single_check_validator(int N)
+algorithms::validators::single_check_validator::single_check_validator(int N)
 {
 	if (N > 0)
 	{
@@ -77,37 +82,37 @@ algorithms::energetic::validators::single_check_validator::single_check_validato
 	}
 }
 
-algorithms::energetic::validators::single_check_validator::~single_check_validator()
+algorithms::validators::single_check_validator::~single_check_validator()
 {
 	cuda_check_terminate(cudaFree(dev_is_invalid));
 }
 
-void algorithms::energetic::validators::print_test(int test_number, int result, int expected)
+void algorithms::validators::print_test(int test_number, int result, int expected)
 {
 	std::cout << "Test " << test_number << ": " << "returned " << result << ", expected " << expected << std::endl;
 }
 
-void algorithms::energetic::validators::single_check_validator_test()
+void algorithms::validators::single_check_validator_test()
 {
 	int N = 3;
 	real_t distance = 1.0;
-	real_t precission = 100 * std::numeric_limits<real_t>::epsilon();
+	real_t precision = 100 * std::numeric_limits<real_t>::epsilon();
 	single_check_validator validator(N);
 	
-	model::particle* dev_particles;
-	int particle_size = sizeof(model::particle);
+	vector3* dev_particles;
+	int particle_size = sizeof(vector3);
 	cuda_check_terminate(cudaMalloc(&dev_particles, N * particle_size));
 
 	// Test 1
-	model::particle particles[] = { 0.0, 0.0, 0.0,
+	vector3 particles[] = { 0.0, 0.0, 0.0,
 									0.0, 1.0, 0.0,
 									1.0, 0.0, 0.0 };
 	
 	cuda_check_terminate(cudaMemcpy(dev_particles, &particles, N * particle_size, cudaMemcpyHostToDevice));
 
-	int result = validator.validate(dev_particles, N, distance, precission);
+	int result = validator.validate(dev_particles, N, distance, precision);
 
-	print_test(1, result, 1);
+	print_test(1, result, 0);
 
 	// releasing memory
 	cuda_check_terminate(cudaFree(dev_particles));

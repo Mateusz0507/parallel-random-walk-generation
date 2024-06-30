@@ -13,34 +13,55 @@
   <ItemGroup>
     <ClInclude Include="src\algorithms\abstract_method.h" />
     <ClInclude Include="src\algorithms\constaces\math_constances.h" />
+    <ClInclude Include="src\algorithms\cuda_memory_releaser.cuh" />
+    <ClInclude Include="src\algorithms\energetic\energetic.h" />
     <ClInclude Include="src\algorithms\energetic\naive\energetic_naive.cuh" />
     <ClInclude Include="src\algorithms\energetic\normalisation\energetic_normalisation.cuh" />
-    <ClInclude Include="src\algorithms\energetic\validators\abstract_validator.h" />
+    <ClInclude Include="src\algorithms\genetic\improved\genetic_improved.cuh" />
+    <ClInclude Include="src\algorithms\genetic\kernels.cuh" />
+    <ClInclude Include="src\algorithms\validators\abstract_validator.h" />
     <ClInclude Include="src\algorithms\cpu\sequential_validation.h" />
-    <ClInclude Include="src\algorithms\energetic\validators\single_check_validator.cuh" />
+    <ClInclude Include="src\algorithms\validators\single_check_validator.cuh" />
+    <ClInclude Include="src\algorithms\genetic\naive\genetic.cuh" />
+    <ClInclude Include="src\algorithms\model\directional_randomization.cuh" />
+    <ClInclude Include="src\algorithms\model\matrix.cuh" />
     <ClInclude Include="src\algorithms\model\particle.cuh" />
     <ClInclude Include="src\algorithms\model\randomization.cuh" />
+    <ClInclude Include="src\algorithms\model\spherical_coordinates.cuh" />
+    <ClInclude Include="src\chimera\chimera.h" />
     <ClInclude Include="src\common\common.cuh" />
     <ClInclude Include="src\common\common.h" />
     <ClInclude Include="src\constants.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\parametrization\program_parametrization.h" />
+    <ClInclude Include="src\tests\tests.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\algorithms\abstract_method.cpp" />
     <ClCompile Include="src\algorithms\cpu\sequential_validation.cpp" />
-    <ClCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cpp" />
-    <ClCompile Include="src\algorithms\energetic\validators\abstract_validator.cpp" />
+    <ClCompile Include="src\algorithms\validators\abstract_validator.cpp" />
+    <ClCompile Include="src\chimera\chimera.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\parametrization\parameters_reading.cpp" />
+    <ClCompile Include="src\tests\tests.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="src\algorithms\cuda_memory_releaser.cu" />
     <CudaCompile Include="src\algorithms\energetic\naive\energetic_naive.cu" />
-    <CudaCompile Include="src\algorithms\energetic\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\algorithms\energetic\normalisation\energetic_normalisation.cu" />
+    <CudaCompile Include="src\algorithms\genetic\naive\genetic.cu" />
+    <CudaCompile Include="src\algorithms\genetic\improved\genetic_improved.cu" />
+    <CudaCompile Include="src\algorithms\genetic\kernels.cu" />
+    <CudaCompile Include="src\algorithms\validators\single_check_validator.cu" />
+    <CudaCompile Include="src\algorithms\model\directional_randomization.cu" />
+    <CudaCompile Include="src\algorithms\model\matrix.cu" />
     <CudaCompile Include="src\algorithms\model\particle.cu" />
     <CudaCompile Include="src\algorithms\model\randomization.cu" />
+    <CudaCompile Include="src\algorithms\model\spherical_coordinates.cu" />
     <CudaCompile Include="src\common\common.cu" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="README.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
