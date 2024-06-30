@@ -65,7 +65,7 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
                 p.mutation_ratio = atof(value);
                 if (p.mutation_ratio < 0 || p.mutation_ratio > 1)
                 {
-                    std::cerr << "Invalid parameter value: mutation-ratio from [0, 1]" << std::endl;
+                    std::cerr << "Invalid parameter value: mutation-ratio must be from [0, 1]" << std::endl;
                     return false;
                 }
             }
