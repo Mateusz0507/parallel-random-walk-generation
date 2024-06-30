@@ -5,7 +5,7 @@ void program_parametrization::print_usage(const char* name)
 {
     std::cerr << "Usage " << name << ":" << std::endl
     << "[-m/--method]=[naive/normalization/genetic/genetic2] (default:naive)" << std::endl
-    << "[-N/--N]=[int] (default:100)" << std::endl
+    << "[-N/--N]=[int >=3] (default:100)" << std::endl
     << "[-d/--directional-level]=[int] (default:0)" << std::endl
     << "[-s/--segments-number]=[int] (default:1)" << std::endl
     << "Parameters for genetic/genetic2 method only:" << std::endl
@@ -37,6 +37,11 @@ bool program_parametrization::read(int argc, char** argv, parameters& p)
         }
         else if (std::string(parameter) == "-N" || std::string(parameter) == "--N") {
             p.N = atoi(value);
+            if (p.N < 3)
+            {
+                std::cerr << "Invalid N parameter value: N >= 3" << std::endl;
+                return false;
+            }
         }
         else if (std::string(parameter) == "-d" || std::string(parameter) == "--directional-level") {
             p.directional_level = atoi(value);
