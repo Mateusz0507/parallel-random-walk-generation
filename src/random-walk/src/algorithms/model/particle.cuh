@@ -5,7 +5,7 @@
 #include "common/common.cuh"
 
 #define DISTANCE 1.0
-#define _FLOAT
+#define _DOUBLE
 
 #ifdef _DOUBLE
 	typedef double real_t;

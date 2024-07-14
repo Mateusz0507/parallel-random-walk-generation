@@ -8,7 +8,7 @@
 
 #ifdef _FLOAT
 	#define cuda_rand_uniform(state) curand_uniform(state)
-#elif define _DOUBLE
+#elif defined _DOUBLE
 	#define cuda_rand_uniform(state) curand_uniform_double(state)
 #endif
 
