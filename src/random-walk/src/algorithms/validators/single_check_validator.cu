@@ -12,7 +12,8 @@ __global__ void kernel_validate(const vector3* dev_data, int N, const real_t dis
 
 		int invalid_count = 0;
 
-		if (index + 1 != N && abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1]) - distance) > precision)
+		if ((index + 1 != N && abs(algorithms::model::get_distance(dev_data[index], dev_data[index + 1]) - distance) > precision) || 
+			(index + 1 == N && algorithms::model::get_distance(dev_data[index], dev_data[0]) < distance - precision))
 		{
 			// case when the following vector3 is in different distance than the specified as an parameter
 			invalid_count++;
