@@ -10,7 +10,7 @@
 #include <random>
 #include <vector>
 
-#define G_PRECISSION std::numeric_limits<real_t>::epsilon()
+#define G_PRECISSION 1e-7
 #define G_DEFAULT_MUTATION_RATIO 0.05f
 
 #define G_BLOCK_SIZE 64

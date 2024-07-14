@@ -14,8 +14,7 @@
 #include <ctime>
 #include <iostream>
 
-#define EN_NUMERIC_EPSILON std::numeric_limits<real_t>::epsilon()
-#define EN_PRECISION (100 * EN_NUMERIC_EPSILON)
+#define EN_PRECISION 1e-7
 #define EN_MAX_ITERATIONS 500
 
 #define EN_BLOCK_SIZE 256
